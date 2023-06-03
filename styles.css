@@ -1,0 +1,56 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+.stats {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+.grid {
+    margin: 0 auto;
+    width: 400px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+.icon {
+    size: 100px;
+    height: 100px;
+}
+.square {
+    height: 150px;
+    width: 150px;
+    border: 1px solid black;
+}
+.mole {
+    background-image: url('./images/whack-a-mole.png');
+    background-size: cover;
+}
+
+@media (max-width: 485px) {
+    body {
+        height: auto;
+        font-size: 14px;
+    }
+    .grid {
+        width: min-content;
+        height: min-content;
+        gap: 2px;
+    }
+    .square {
+        height: 100px;
+        width: 100px;
+    }
+}
