@@ -9,13 +9,16 @@ describe('Whack-a-Mole Game', () => {
             <div class="stats">
                 <span id="score">0</span>
                 <span id="time-left">30</span>
+                <span id="high-score">0</span>
             </div>
             <div class="controls">
                 <button id="start-button">Start Game</button>
                 <button id="pause-button" disabled>Pause</button>
                 <button id="restart-button" disabled>Restart</button>
+                <button id="reset-highscore-button">Reset High Score</button>
             </div>
             <h2 id="final-score"></h2>
+            <div id="high-score-message"></div>
             <div class="grid">
                 ${Array(9).fill().map((_, i) => `<div class="square" id="${i + 1}"></div>`).join('')}
             </div>
@@ -35,11 +38,13 @@ describe('Whack-a-Mole Game', () => {
         // Clean up timers
         jest.clearAllTimers();
         jest.useRealTimers();
+        localStorage.clear();
     });
     
     test('initial game state', () => {
         expect(document.querySelector('#score').textContent).toBe('0');
         expect(document.querySelector('#time-left').textContent).toBe('30');
+         expect(document.querySelector('#high-score').textContent).toBe('0');
         expect(document.querySelector('#start-button').disabled).toBeFalsy();
         expect(document.querySelector('#pause-button').disabled).toBeTruthy();
         expect(document.querySelector('#restart-button').disabled).toBeTruthy();
@@ -103,4 +108,5 @@ describe('Whack-a-Mole Game', () => {
         expect(document.querySelector('#pause-button').disabled).toBeTruthy();
         expect(document.querySelector('#restart-button').disabled).toBeFalsy();
     });
+
 });
