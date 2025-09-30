@@ -1,0 +1,25 @@
+{
+  "name": "whack-a-mole",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest --watchAll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piyushkdas0611/whack-a-mole.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/piyushkdas0611/whack-a-mole/issues"
+  },
+  "homepage": "https://github.com/piyushkdas0611/whack-a-mole#readme",
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0"
+  }
+}
