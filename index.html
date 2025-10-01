@@ -8,37 +8,73 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="header">
-        <img src="./images/whack-a-mole.png" alt="" class="icon">
-        <h1>Whack A Mole</h1>
+    <div class="game-container">
+        <div class="header">
+            <div class="title-container"> 
+                <img src="./images/whack-a-mole.png">
+                <h1>Whack A Mole</h1>
+            </div>
+        </div>
+        
+        <div class="game-board">
+            <div class="stats-container">
+                <div class="stat">
+                    <span class="stat-label">Your Score:</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Time Left:</span>
+                    <span id="time-left" class="stat-value">30</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">High Score:</span>
+                    <span id="high-score" class="stat-value">0</span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="start-button" class="btn btn-primary">Start Game</button>
+                <button id="pause-button" class="btn btn-secondary" disabled>Pause</button>
+                <button id="restart-button" class="btn btn-secondary" disabled>Restart</button>
+                <button id="reset-highscore-button" class="btn btn-tertiary">Reset High Score</button>
+            </div>
+            
+            <div id="final-score" class="final-score"></div>
+            <div id="high-score-message" class="high-score-message"></div>
+            
+            <div class="grid-container">
+                <div class="grid">
+                    <div class="square" id="1">
+                        <div class="hole"></div>
+                    </div>
+                    <div class="square" id="2">
+                        <div class="hole"></div>
+                    </div>
+                    <div class="square" id="3">
+                        <div class="hole"></div>
+                    </div>
+                    <div class="square" id="4">
+                        <div class="hole"></div>
+                    </div>
+                    <div class="square" id="5">
+                        <div class="hole"></div>
+                    </div>
+                    <div class="square" id="6">
+                        <div class="hole"></div>
+                    </div>
+                    <div class="square" id="7">
+                        <div class="hole"></div>
+                    </div>
+                    <div class="square" id="8">
+                        <div class="hole"></div>
+                    </div>
+                    <div class="square" id="9">
+                        <div class="hole"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-   <div class="stats">
-        <b>Your Score:</b>
-        <span id="score">0</span>
-        <b>Time Left:</b>
-        <span id="time-left">30</span>
-        <b>High Score:</b>        
-        <span id="high-score">0</span>
-   </div>
-    <div class="controls">
-        <button id="start-button">Start Game</button>
-        <button id="pause-button" disabled>Pause</button>
-        <button id="restart-button" disabled>Restart</button>
-        <button id="reset-highscore-button">Reset High Score</button>
-    </div>
-   <h2 id="final-score"></h2>
-   <div id="high-score-message" class="high-score-message"></div>
-    <div class="grid">
-        <div class="square" id="1"></div>
-        <div class="square" id="2"></div>
-        <div class="square" id="3"></div>
-        <div class="square" id="4"></div>
-        <div class="square" id="5"></div>
-        <div class="square" id="6"></div>
-        <div class="square" id="7"></div>
-        <div class="square" id="8"></div>
-        <div class="square" id="9"></div>
-    </div>
-    <script src="./app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
