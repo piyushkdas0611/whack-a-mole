@@ -1,3 +1,42 @@
+/* CSS Variables for Light/Dark Theme */
+:root {
+    /* Light Theme (default) */
+    --bg-color: #f5f5f5;
+    --text-color: #333;
+    --header-color: #2c3e50;
+    --square-bg: #8B4513;
+    --square-border: #654321;
+    --button-primary: #4CAF50;
+    --button-primary-hover: #45a049;
+    --button-danger: #f44336;
+    --button-danger-hover: #da190b;
+    --button-info: #2196F3;
+    --button-info-hover: #1976D2;
+    --button-theme: #9c27b0;
+    --button-theme-hover: #7b1fa2;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --high-score-color: #ff6b00;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --header-color: #bb86fc;
+    --square-bg: #3a2317;
+    --square-border: #5d3a1a;
+    --button-primary: #4CAF50;
+    --button-primary-hover: #45a049;
+    --button-danger: #f44336;
+    --button-danger-hover: #da190b;
+    --button-info: #64b5f6;
+    --button-info-hover: #42a5f5;
+    --button-theme: #ffb74d;
+    --button-theme-hover: #ffa726;
+    --shadow-color: rgba(0, 0, 0, 0.6);
+    --high-score-color: #ffab40;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -12,6 +51,9 @@ body {
     justify-content: center;
     align-items: center;
     gap: 1rem;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .header {
@@ -110,6 +152,46 @@ button:disabled {
 
 #reset-highscore-button:hover:not(:disabled) {
     background-color: #e68900;
+}
+
+/* Theme Toggle Button */
+#theme-toggle-button {
+    background-color: var(--button-theme);
+    font-size: 0.9rem;
+}
+
+#theme-toggle-button:hover:not(:disabled) {
+    background-color: var(--button-theme-hover);
+}
+
+/* Sound Toggle Button */
+#sound-toggle-button {
+    background-color: #607d8b;
+    font-size: 0.9rem;
+}
+
+#sound-toggle-button:hover:not(:disabled) {
+    background-color: #546e7a;
+}
+
+/* Header styling with theme support */
+.header h1 {
+    color: var(--header-color);
+    transition: color 0.3s ease;
+}
+
+/* Square styling with theme support */
+.square {
+    background-color: var(--square-bg);
+    border: 2px solid var(--square-border);
+    transition: all 0.3s ease;
+}
+
+/* High score color */
+#high-score {
+    color: var(--high-score-color);
+    font-weight: bold;
+    font-size: 1.2em;
 }
 
 .high-score-message {
