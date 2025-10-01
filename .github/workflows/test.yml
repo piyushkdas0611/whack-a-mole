@@ -32,7 +32,8 @@ jobs:
         run: npm ci   # Clean install (faster & consistent)
 
       - name: 🧪 Run Unit Tests
-        run: npm test -- --run --reporter=verbose
+        run: npm test -- --verbose
+        # Removed the invalid --run flag
 
       - name: 📊 Upload Test Coverage (optional)
         if: success()
