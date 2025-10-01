@@ -11,14 +11,14 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 0.3 rem;
 }
 
 .header {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
 }
 
 .header img {
@@ -30,9 +30,14 @@ body {
 .stats {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 2rem;
     font-size: 1.1rem;
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
+
 
 .grid {
     margin: 0 auto;
@@ -54,6 +59,12 @@ body {
     aspect-ratio: 1;
     width: 100%;
     border: 1px solid black;
+    cursor: grab;
+    transition: transform 0.1s;
+}
+
+.square:hover {
+    transform: scale(0.95);
 }
 
 .mole {
@@ -77,6 +88,7 @@ button {
     background-color: #4CAF50;
     color: white;
     transition: background-color 0.3s;
+    transition: all 0.3s;
 }
 
 button:hover:not(:disabled) {
@@ -127,12 +139,18 @@ button:disabled {
 }
 
 @keyframes bounce {
-    0%, 20%, 60%, 100% {
+
+    0%,
+    20%,
+    60%,
+    100% {
         transform: translateY(0);
     }
+
     40% {
         transform: translateY(-10px);
     }
+
     80% {
         transform: translateY(-5px);
     }
@@ -155,4 +173,56 @@ button:disabled {
         height: 85vmin;
         gap: 0.125rem;
     }
+}
+
+.high-score-display .label {
+    color: black;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.high-score-display {
+    padding: 1rem 1.5rem;
+    min-width: 200px;
+}
+
+.high-score-display #high-score {
+    font-size: 2.5rem;
+}
+
+.high-score-display #high-score {
+    color: #1a1010;
+    font-weight: bold;
+    font-size: 2rem;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.stat-item b {
+    color: #667eea;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-item span {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+#final-score {
+    padding-bottom: 0.5rem;
 }
