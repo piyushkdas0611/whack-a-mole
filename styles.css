@@ -27,6 +27,54 @@ body {
     margin-right: 0.625rem;
 }
 
+/* NEW: Difficulty Selector Styles */
+.difficulty-selector {
+    text-align: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(76, 175, 80, 0.05);
+    border-radius: 0.625rem;
+    border: 2px solid rgba(76, 175, 80, 0.2);
+}
+
+.difficulty-selector label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.difficulty-btn {
+    margin: 0 0.313rem;
+    padding: 0.625rem 1.25rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid #4CAF50;
+    background: white;
+    color: #4CAF50;
+    border-radius: 0.313rem;
+    transition: all 0.3s ease;
+}
+
+.difficulty-btn.active {
+    background: #4CAF50;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.difficulty-btn:hover:not(.active) {
+    background: rgba(76, 175, 80, 0.1);
+    transform: translateY(-2px);
+}
+
+.difficulty-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .stats {
     display: flex;
     flex-direction: row;
@@ -54,6 +102,12 @@ body {
     aspect-ratio: 1;
     width: 100%;
     border: 1px solid black;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.square:active {
+    transform: scale(0.95);
 }
 
 .mole {
@@ -66,6 +120,7 @@ body {
     display: flex;
     gap: 0.625rem;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 button {
@@ -76,16 +131,24 @@ button {
     border: none;
     background-color: #4CAF50;
     color: white;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    font-weight: 600;
 }
 
 button:hover:not(:disabled) {
     background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+    transform: none;
 }
 
 #pause-button {
@@ -144,6 +207,19 @@ button:disabled {
     font-size: 1.2em;
 }
 
+#final-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4CAF50;
+    text-align: center;
+    margin: 1rem 0;
+}
+
+#current-difficulty {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
 @media (max-width: 30.313rem) {
     body {
         height: auto;
@@ -154,5 +230,31 @@ button:disabled {
         width: 85vmin;
         height: 85vmin;
         gap: 0.125rem;
+    }
+
+    .difficulty-selector {
+        padding: 0.75rem;
+    }
+
+    .difficulty-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        margin: 0.25rem;
+    }
+
+    .controls {
+        gap: 0.5rem;
+    }
+
+    button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .stats {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 1rem;
     }
 }

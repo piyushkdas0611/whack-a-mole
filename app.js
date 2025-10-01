@@ -1,3 +1,15 @@
+// Import game logic functions
+import { 
+    difficultySettings,
+    increaseScore,
+    spawnMole,
+    resetMolePosition,
+    getCurrentSpeed,
+    getInitialTime,
+    shouldChangeSpeed
+} from './src/gameLogic.js';
+
+// DOM Elements
 const squares = document.querySelectorAll('.square')
 const mole = document.querySelector('.mole')
 const timeLeft = document.querySelector('#time-left')
@@ -9,10 +21,13 @@ const pauseButton = document.querySelector('#pause-button')
 const restartButton = document.querySelector('#restart-button')
 const resetHighScoreButton = document.querySelector('#reset-highscore-button')
 const highScoreMessage = document.querySelector('#high-score-message')
+const difficultyButtons = document.querySelectorAll('.difficulty-btn')
+const currentDifficultyDisplay = document.querySelector('#current-difficulty')
 
 // Audio for hitting mole
 const hitSound = new Audio('audio/whack01.mp3')  
 
+// Game State Variables
 let result = 0
 let hit = 0
 let currentTime = 30
@@ -20,22 +35,23 @@ let timer = null
 let countDownTimer = null
 let isGamePaused = false
 let isGameRunning = false
+let currentDifficulty = 'easy'
 
-// HIGH SCORE- from local storage 
+// HIGH SCORE - Separate for each difficulty level
 function getHighScore() {
-    return parseInt(localStorage.getItem('whackAMoleHighScore')) || 0
+    return parseInt(localStorage.getItem(`whackAMoleHighScore_${currentDifficulty}`)) || 0
 }
 
-function setHighScore(score) {
-    localStorage.setItem('whackAMoleHighScore', score)
-    highScore.textContent = score
+function setHighScore(scoreValue) {
+    localStorage.setItem(`whackAMoleHighScore_${currentDifficulty}`, scoreValue)
+    highScore.textContent = scoreValue
 }
 
 function updateHighScoreDisplay() {
     highScore.textContent = getHighScore()
 }
 
-// compare current score with high score 
+// Compare current score with high score 
 function checkHighScore() {
     const currentHigh = getHighScore()
     if (result > currentHigh) {
@@ -48,9 +64,9 @@ function checkHighScore() {
     }
 }
 
-// reset to 0 on clicking reset high score button 
+// Reset high score for current difficulty
 function resetHighScore() {
-    if (confirm('Are you sure you want to reset the high score?')) {
+    if (confirm(`Are you sure you want to reset the ${currentDifficulty.toUpperCase()} high score?`)) {
         setHighScore(0)
         highScoreMessage.textContent = 'High Score Reset!'
         highScoreMessage.style.display = 'block'
@@ -60,18 +76,20 @@ function resetHighScore() {
     }
 }
 
+// Reset game to initial state
 function resetGame() {
     clearInterval(timer)
     clearInterval(countDownTimer)
     
     result = 0
-    currentTime = 30
+    currentTime = getInitialTime(currentDifficulty)
     score.textContent = result
     timeLeft.textContent = currentTime
     final.innerHTML = ''
     highScoreMessage.style.display = 'none'
-    document.querySelector('.stats').style.display = 'block'
+    document.querySelector('.stats').style.display = 'flex'
     squares.forEach(square => square.classList.remove('mole'))
+    resetMolePosition()
     isGamePaused = false
     isGameRunning = false
     startButton.disabled = false
@@ -80,6 +98,7 @@ function resetGame() {
     restartButton.disabled = true
 }
 
+// Start the game
 function startGame() {
     if (!isGameRunning) {
         resetGame()
@@ -92,6 +111,7 @@ function startGame() {
     }
 }
 
+// Pause/Resume the game
 function pauseGame() {
     if (isGameRunning) {
         if (!isGamePaused) {
@@ -108,44 +128,59 @@ function pauseGame() {
     }
 }
 
+// Spawn mole in random square using gameLogic
 function randomSquare() {
     squares.forEach(square => {
         square.classList.remove('mole')
     })
 
-    let randomSquare = squares[Math.floor(Math.random() * 9)]
+    const randomIndex = spawnMole(9, true) // 9 squares, avoid repeats
+    const randomSquare = squares[randomIndex]
     randomSquare.classList.add('mole')
     hit = randomSquare.id
 }
 
+// Click event for each square
 squares.forEach(square => {
     square.addEventListener('mousedown', () => {
         if(square.id == hit && isGameRunning && !isGamePaused){
-            result++
+            // Use enhanced scoring from gameLogic
+            result = increaseScore(result, currentDifficulty, currentTime)
             score.textContent = result
             hit = null
 
             // Play hit sound
             hitSound.currentTime = 0   // Restart if clicked rapidly
-            hitSound.play()
+            hitSound.play().catch(err => {
+                // Handle audio play errors (browser autoplay policy)
+                console.log('Audio play prevented:', err)
+            })
         }
     })
 })
 
+// Move mole at intervals based on difficulty and time
 function moveMole() {
-    if(currentTime >= 20)
-        timer = setInterval(randomSquare, 500)
-    else if(currentTime < 20)
-        timer = setInterval(randomSquare, 100)
+    clearInterval(timer)
+    const speed = getCurrentSpeed(currentTime, currentDifficulty)
+    timer = setInterval(randomSquare, speed)
 }
 
+// Countdown timer
 function countDown() {
     currentTime--
     timeLeft.textContent = currentTime
+    
+    // Check if speed should change (based on difficulty settings)
+    if (shouldChangeSpeed(currentTime, currentDifficulty)) {
+        moveMole() // Update to faster speed
+    }
+    
+    // Game over
     if(currentTime == 0) {
         clearInterval(countDownTimer)
         clearInterval(timer)
-        final.innerHTML = `Your final score is : ${score.textContent}`
+        final.innerHTML = `Your final score is: ${score.textContent}`
         checkHighScore()
         
         document.querySelector('.stats').style.display = 'none'
@@ -153,15 +188,39 @@ function countDown() {
         startButton.disabled = true
         pauseButton.disabled = true
         restartButton.disabled = false
+        
+        // Remove any remaining moles
+        squares.forEach(square => square.classList.remove('mole'))
     }
 }
 
-// Event listeners
+// Difficulty selection handler
+difficultyButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Only allow difficulty change when game is not running
+        if (!isGameRunning) {
+            // Update active button styling
+            difficultyButtons.forEach(b => b.classList.remove('active'))
+            btn.classList.add('active')
+            
+            // Set new difficulty
+            currentDifficulty = btn.dataset.level
+            currentDifficultyDisplay.textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1)
+            
+            // Reset game with new difficulty settings
+            resetGame()
+            updateHighScoreDisplay()
+        }
+    })
+})
+
+// Event listeners for control buttons
 startButton.addEventListener('click', startGame)
 pauseButton.addEventListener('click', pauseGame)
 restartButton.addEventListener('click', resetGame)
 resetHighScoreButton.addEventListener('click', resetHighScore)
 
-// Initialize
+// Initialize game on page load
+resetMolePosition()
 resetGame()
 updateHighScoreDisplay()
