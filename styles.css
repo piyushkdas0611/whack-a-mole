@@ -104,6 +104,46 @@ button:disabled {
     background-color: #0b7dda;
 }
 
+#reset-highscore-button {
+    background-color: #ff9800;
+}
+
+#reset-highscore-button:hover:not(:disabled) {
+    background-color: #e68900;
+}
+
+.high-score-message {
+    display: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff6b00;
+    text-align: center;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #fff3cd;
+    border: 2px solid #ff6b00;
+    border-radius: 5px;
+    animation: bounce 0.5s;
+}
+
+@keyframes bounce {
+    0%, 20%, 60%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    80% {
+        transform: translateY(-5px);
+    }
+}
+
+#high-score {
+    color: #ff6b00;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
 @media (max-width: 30.313rem) {
     body {
         height: auto;

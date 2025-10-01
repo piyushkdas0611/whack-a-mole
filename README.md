@@ -7,6 +7,7 @@ A classic Whack-a-Mole game built with HTML, CSS, and JavaScript. Test your refl
 - Start, pause, and restart game functionality
 - Dynamic scoring system
 - Increasing difficulty as time progresses
+- Persistent high score tracking
 - Responsive design for all devices
 - Clean and modern UI
 

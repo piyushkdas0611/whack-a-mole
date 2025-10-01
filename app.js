@@ -2,10 +2,13 @@ const squares = document.querySelectorAll('.square')
 const mole = document.querySelector('.mole')
 const timeLeft = document.querySelector('#time-left')
 const score = document.querySelector('#score')
+const highScore = document.querySelector('#high-score')
 const final = document.querySelector('#final-score')
 const startButton = document.querySelector('#start-button')
 const pauseButton = document.querySelector('#pause-button')
 const restartButton = document.querySelector('#restart-button')
+const resetHighScoreButton = document.querySelector('#reset-highscore-button')
+const highScoreMessage = document.querySelector('#high-score-message')
 
 let result = 0
 let hit = 0
@@ -15,17 +18,55 @@ let countDownTimer = null
 let isGamePaused = false
 let isGameRunning = false
 
+// HIGH SCORE- from local storage 
+function getHighScore() {
+    return parseInt(localStorage.getItem('whackAMoleHighScore')) || 0
+}
+
+function setHighScore(score) {
+    localStorage.setItem('whackAMoleHighScore', score)
+    highScore.textContent = score
+}
+
+function updateHighScoreDisplay() {
+    highScore.textContent = getHighScore()
+}
+
+// compare current score with high score 
+function checkHighScore() {
+    const currentHigh = getHighScore()
+    if (result > currentHigh) {
+        setHighScore(result)
+        highScoreMessage.textContent = '🎉 New High Score! 🎉'
+        highScoreMessage.style.display = 'block'
+        setTimeout(() => {
+            highScoreMessage.style.display = 'none'
+        }, 3000)
+    }
+}
+
+// reset to 0 on clicking reset high score button 
+function resetHighScore() {
+    if (confirm('Are you sure you want to reset the high score?')) {
+        setHighScore(0)
+        highScoreMessage.textContent = 'High Score Reset!'
+        highScoreMessage.style.display = 'block'
+        setTimeout(() => {
+            highScoreMessage.style.display = 'none'
+        }, 2000)
+    }
+}
+
 function resetGame() {
-    // Clear all running timers
     clearInterval(timer)
     clearInterval(countDownTimer)
     
-    // Reset all game variables
     result = 0
     currentTime = 30
     score.textContent = result
     timeLeft.textContent = currentTime
     final.innerHTML = ''
+    highScoreMessage.style.display = 'none'
     document.querySelector('.stats').style.display = 'block'
     squares.forEach(square => square.classList.remove('mole'))
     isGamePaused = false
@@ -51,13 +92,11 @@ function startGame() {
 function pauseGame() {
     if (isGameRunning) {
         if (!isGamePaused) {
-            // Pause
             clearInterval(timer)
             clearInterval(countDownTimer)
             pauseButton.textContent = 'Resume'
             isGamePaused = true
         } else {
-            // Resume
             moveMole()
             countDownTimer = setInterval(countDown, 1000)
             pauseButton.textContent = 'Pause'
@@ -100,6 +139,8 @@ function countDown() {
         clearInterval(countDownTimer)
         clearInterval(timer)
         final.innerHTML = `Your final score is : ${score.textContent}`
+        checkHighScore()
+        
         document.querySelector('.stats').style.display = 'none'
         isGameRunning = false
         startButton.disabled = true
@@ -108,10 +149,12 @@ function countDown() {
     }
 }
 
-// Event listeners for buttons
+// Event listeners
 startButton.addEventListener('click', startGame)
 pauseButton.addEventListener('click', pauseGame)
 restartButton.addEventListener('click', resetGame)
+resetHighScoreButton.addEventListener('click', resetHighScore)
 
-// Initialize game state
+// Initialize
 resetGame()
+updateHighScoreDisplay() 
