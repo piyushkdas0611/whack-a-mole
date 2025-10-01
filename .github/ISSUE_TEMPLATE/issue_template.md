@@ -63,5 +63,5 @@ Add any other context, links, references, or notes that might help.
 ### 🙌 Contributor Checklist
 - [ ] I have searched existing issues to avoid duplicates  
 - [ ] I agree to follow this project's Code of Conduct  
-- [ ] I am a GSSOC'25 contributor  
+- [ ] I am a GSSOC'25 contributor and hacktoberfest-2025 contributor
 - [ ] I want to work on this issue
