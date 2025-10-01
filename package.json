@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "jest --watchAll"
+    "test": "jest app.test.js",
+    "vitest": "vitest run src/gameLogic.test.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   "homepage": "https://github.com/piyushkdas0611/whack-a-mole#readme",
   "devDependencies": {
     "jest": "^29.0.0",
-    "jest-environment-jsdom": "^29.0.0"
+    "jest-environment-jsdom": "^29.0.0",
+    "vitest": "^3.2.4"
   }
 }
