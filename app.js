@@ -10,6 +10,9 @@ const restartButton = document.querySelector('#restart-button')
 const resetHighScoreButton = document.querySelector('#reset-highscore-button')
 const highScoreMessage = document.querySelector('#high-score-message')
 
+// Audio for hitting mole
+const hitSound = new Audio('audio/whack01.mp3')  
+
 let result = 0
 let hit = 0
 let currentTime = 30
@@ -121,6 +124,10 @@ squares.forEach(square => {
             result++
             score.textContent = result
             hit = null
+
+            // Play hit sound
+            hitSound.currentTime = 0   // Restart if clicked rapidly
+            hitSound.play()
         }
     })
 })
@@ -157,4 +164,4 @@ resetHighScoreButton.addEventListener('click', resetHighScore)
 
 // Initialize
 resetGame()
-updateHighScoreDisplay() 
+updateHighScoreDisplay()
