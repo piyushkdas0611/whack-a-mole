@@ -1,6 +1,8 @@
 # Whack-a-Mole Game 🎮
 
-A classic Whack-a-Mole game built with HTML, CSS, and JavaScript. Test your reflexes by whacking the moles as they pop up randomly!
+A classic Whack-a-Mole game built with HTML, CSS, and JavaScript. 
+Test your reflexes by whacking the moles as they pop up randomly!
+---
 
 ## 🎯 Features
 
@@ -10,16 +12,19 @@ A classic Whack-a-Mole game built with HTML, CSS, and JavaScript. Test your refl
 - Persistent high score tracking
 - Responsive design for all devices
 - Clean and modern UI
-- Smooth animations for mole appearances and disappearances
-- Visual hit effects and sound feedback
-- Full mobile and touch device support
-- Responsive design for all screen sizes
-- Dark/light mode theme toggle with persistence
-- Comprehensive sound system with multiple effects
-- Sound control toggle (mute/unmute functionality)
+---
 
 ## 🚀 Getting Started
 
+### Prerequisites
+- Node.js (for running tests)
+- Modern web browser
+
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/piyushkdas0611/whack-a-mole.git
+   cd whack-a-mole
 ### Prerequisites
 
 - Node.js (for running tests)
@@ -45,27 +50,21 @@ npm install
 ```bash
 npm test
 ```
+This will execute all tests in gameLogic.test.js to ensure scoring, mole spawning, and timer logic work correctly.
 
+---
 ## 🤝 Contributing
 
 We welcome contributions for Hacktoberfest! Here are some ways you can contribute:
 
-### Current Features Status
+### Open Issues
 
-- [x] Add sound effects when hitting moles ✅ (Implemented with whack01.mp3)
-- [x] Add high score functionality ✅ (Persistent localStorage with reset option)
-- [x] Implement basic difficulty progression ✅ (Speed increases after 10 seconds)
-
-### Open Issues - Need Contributors!
-
-- [ ] Implement multiple difficulty levels (Easy/Medium/Hard modes)
-- [x] Create smooth animations for mole appearances/disappearances ✅ (Added scale, fade, and hit animations)
-- [x] Add mobile touch support and responsive touch controls ✅ (Full touch events, responsive design, mobile optimizations)
-- [x] Add dark/light mode theme toggle ✅ (CSS variables, localStorage persistence, smooth transitions)
-- [x] Add more sound effects (background music, different hit sounds) ✅ (Game start/over sounds, sound toggle)
-- [ ] Implement power-ups (bonus points, time extensions, etc.)
-- [ ] Add visual effects (particles, screen shake on hit)
-- [ ] Implement combo system (bonus for consecutive hits)
+- [ ] Add sound effects when hitting moles
+- [ ] Implement different difficulty levels
+- [ ] Add high score functionality
+- [ ] Create animations for mole appearances
+- [ ] Add mobile touch support
+- [ ] Implement power-ups
 
 ### How to Contribute
 
@@ -82,6 +81,7 @@ We welcome contributions for Hacktoberfest! Here are some ways you can contribut
 - Include comments in your code where necessary
 - Write meaningful commit messages
 - Add appropriate tests for your features
+---
 
 ## 🛠️ Built With
 
@@ -89,17 +89,23 @@ We welcome contributions for Hacktoberfest! Here are some ways you can contribut
 - CSS3
 - JavaScript
 - Jest (Testing)
+---
+
+## 🖼️ Screenshots / Demo
+<img width="621" height="647" alt="image" src="https://github.com/user-attachments/assets/6274beb0-afbe-46ff-ac7f-e925f582edd8" />
+---
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+---
 
 ## 🙏 Acknowledgments
 
 - Game assets from [source]
 - Contributors who participate in Hacktoberfest
 - The open-source community
-
+---
 ## 📬 Contact
 
 Project Link: [https://github.com/piyushkdas0611/whack-a-mole](https://github.com/piyushkdas0611/whack-a-mole)
