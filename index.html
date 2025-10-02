@@ -2,43 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whack A Mole</title>
+    <title>Whack A Mole - Arcade Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="header">
-        <img src="./images/whack-a-mole.png" alt="" class="icon">
-        <h1>Whack A Mole</h1>
+<body class="day">
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title floating">Whack A Mole</h1>
+            <p class="game-subtitle">Test your reflexes in this fast-paced arcade game!</p>
+        </div>
+
+        <div class="stats-panel">
+            <div class="player-stats">
+                <div class="player-card active" id="panel-player1">
+                    <div class="player-name">Player 1</div>
+                    <div class="player-score" id="score1">0</div>
+                    <div class="player-controls">WASD + SPACE</div>
+                </div>
+                <div class="player-card" id="panel-player2">
+                    <div class="player-name">Player 2</div>
+                    <div class="player-score" id="score2">0</div>
+                    <div class="player-controls">ARROWS + ENTER</div>
+                </div>
+            </div>
+            <div class="game-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Time Left</div>
+                    <div class="stat-value time-left" id="time-left">30</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">High Score</div>
+                    <div class="stat-value high-score" id="high-score">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button class="game-btn btn-start" id="start-button">
+                <i class="fas fa-play"></i> Start Game
+            </button>
+            <button class="game-btn btn-pause" id="pause-button" disabled>
+                <i class="fas fa-pause"></i> Pause
+            </button>
+            <button class="game-btn btn-restart" id="restart-button" disabled>
+                <i class="fas fa-redo"></i> Restart
+            </button>
+            <button class="game-btn" id="reset-highscore-button">
+                <i class="fas fa-trophy"></i> Reset High Score
+            </button>
+        </div>
+
+        <div class="game-messages">
+            <h2 id="final-score"></h2>
+            <div id="high-score-message" class="high-score-message"></div>
+        </div>
+
+        <div class="game-grid-container">
+            <div class="grid" id="grid">
+                <div class="hole" data-id="1">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+                <div class="hole" data-id="2">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+                <div class="hole" data-id="3">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+                <div class="hole" data-id="4">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+                <div class="hole" data-id="5">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+                <div class="hole" data-id="6">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+                <div class="hole" data-id="7">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+                <div class="hole" data-id="8">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+                <div class="hole" data-id="9">
+                    <div class="mole">
+                        <div class="eyes eye-left"><div class="pupil"></div></div>
+                        <div class="eyes eye-right"><div class="pupil"></div></div>
+                        <div class="nose"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-settings">
+            <div class="setting-group">
+                <label for="theme-select">Theme:</label>
+                <select id="theme-select">
+                    <option value="day" style="color: black;">Day</option>
+                    <option value="night">Night</option>
+                    <option value="space">Space</option>
+                    <option value="jungle">Jungle</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label class="toggle-label">
+                    <input type="checkbox" id="multiplayer-toggle">
+                    <span class="toggle-switch"></span>
+                    Multiplayer Mode
+                </label>
+            </div>
+        </div>
     </div>
-   <div class="stats">
-        <b>Your Score:</b>
-        <span id="score">0</span>
-        <b>Time Left:</b>
-        <span id="time-left">30</span>
-        <b>High Score:</b>        
-        <span id="high-score">0</span>
-   </div>
-    <div class="controls">
-        <button id="start-button">Start Game</button>
-        <button id="pause-button" disabled>Pause</button>
-        <button id="restart-button" disabled>Restart</button>
-        <button id="reset-highscore-button">Reset High Score</button>
-    </div>
-   <h2 id="final-score"></h2>
-   <div id="high-score-message" class="high-score-message"></div>
-    <div class="grid">
-        <div class="square" id="1"></div>
-        <div class="square" id="2"></div>
-        <div class="square" id="3"></div>
-        <div class="square" id="4"></div>
-        <div class="square" id="5"></div>
-        <div class="square" id="6"></div>
-        <div class="square" id="7"></div>
-        <div class="square" id="8"></div>
-        <div class="square" id="9"></div>
-    </div>
-    <script src="./app.js"></script>
+
+    <div class="particles" id="particles"></div>
+    <script src="app.js"></script>
 </body>
 </html>
