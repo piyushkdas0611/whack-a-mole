@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#8B4513">
     <title>Whack A Mole</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -25,6 +28,8 @@
         <button id="pause-button" disabled>Pause</button>
         <button id="restart-button" disabled>Restart</button>
         <button id="reset-highscore-button">Reset High Score</button>
+        <button id="theme-toggle-button" class="theme-toggle">🌙 Dark Mode</button>
+        <button id="sound-toggle-button" class="sound-toggle">🔊 Sound On</button>
     </div>
    <h2 id="final-score"></h2>
    <div id="high-score-message" class="high-score-message"></div>
