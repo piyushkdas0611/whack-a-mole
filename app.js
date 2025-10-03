@@ -174,12 +174,10 @@ function countDown() {
     if(currentTime == 0) {
         clearInterval(countDownTimer)
         clearInterval(timer)
-        final.innerHTML = `Your final score is : ${score.textContent}`
-        checkHighScore()
-        
-        document.querySelector('.stats').style.display = 'none'
+        final.textContent = `Your final score is : ${result}`
+        document.querySelector('.stats').style.display = 'flex'
         isGameRunning = false
-        startButton.disabled = false
+        startButton.disabled = true
         pauseButton.disabled = true
         restartButton.disabled = false
          // Remove any remaining moles

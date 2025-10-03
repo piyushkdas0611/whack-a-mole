@@ -95,18 +95,38 @@ describe('Whack-a-Mole Game', () => {
     });
 
     test('game over state', () => {
+        // Clear any existing timers first
+        jest.clearAllTimers();
         jest.useFakeTimers();
         
         const startButton = document.querySelector('#start-button');
+        const finalScore = document.querySelector('#final-score');
+        const timeLeft = document.querySelector('#time-left');
+        
+        // Start the game
         startButton.click();
+        
+        // Log initial state
+        console.log('Initial state:', {
+            timeLeft: timeLeft.textContent,
+            finalScore: finalScore.textContent
+        });
 
-        // Fast forward 30 seconds
+        // Advance time by 30 seconds
         jest.advanceTimersByTime(30000);
+        jest.runOnlyPendingTimers();
+        
+        // Log final state
+        console.log('Final state:', {
+            timeLeft: timeLeft.textContent,
+            finalScore: finalScore.textContent
+        });
 
-        expect(document.querySelector('#final-score')).not.toBe('');
+        // More specific expectation
+        expect(finalScore.textContent).toContain('Your final score is');
+        expect(timeLeft.textContent).toBe('0');
         expect(startButton.disabled).toBeTruthy();
         expect(document.querySelector('#pause-button').disabled).toBeTruthy();
         expect(document.querySelector('#restart-button').disabled).toBeFalsy();
     });
-
 });
