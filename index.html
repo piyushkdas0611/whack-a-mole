@@ -1,50 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whack A Mole</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Whack A Mole</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="header">
-        <img src="./images/whack-a-mole.png" alt="" class="icon">
+  <div class="container">
+    <header class="header" role="banner">
+      <div class="brand">
+        <img src="./images/whack-a-mole.png" alt="Whack-a-mole logo" class="icon" />
         <h1>Whack A Mole</h1>
+      </div>
+
+      <div class="controls" role="region" aria-label="Game controls">
+        <button id="start-button" class="btn primary" aria-pressed="false">Start</button>
+        <button id="pause-button" class="btn" disabled>Pause</button>
+        <button id="restart-button" class="btn" disabled>Restart</button>
+        <button id="reset-highscore-button" class="btn danger">Reset Highscore</button>
+      </div>
+    </header>
+
+    <section class="scoreboard" aria-live="polite">
+      <div class="stat-item">
+        <div class="label">Time</div>
+        <div id="time-left" class="stat-value">30</div>
+      </div>
+      <div class="stat-item">
+        <div class="label">Score</div>
+        <div id="score" class="stat-value">0</div>
+      </div>
+      <div class="stat-item">
+        <div class="label">High</div>
+        <div id="high-score" class="stat-value">0</div>
+      </div>
+    </section>
+
+    <div id="high-score-message" class="high-score-message" aria-hidden="true"></div>
+
+    <main class="game-area" role="main">
+      <div class="grid" id="grid" role="grid" aria-label="Whack the mole grid">
+        <!-- 9 squares -->
+        <div class="square" id="sq1" role="button" tabindex="0" aria-label="Mole hole 1"></div>
+        <div class="square" id="sq2" role="button" tabindex="0" aria-label="Mole hole 2"></div>
+        <div class="square" id="sq3" role="button" tabindex="0" aria-label="Mole hole 3"></div>
+        <div class="square" id="sq4" role="button" tabindex="0" aria-label="Mole hole 4"></div>
+        <div class="square" id="sq5" role="button" tabindex="0" aria-label="Mole hole 5"></div>
+        <div class="square" id="sq6" role="button" tabindex="0" aria-label="Mole hole 6"></div>
+        <div class="square" id="sq7" role="button" tabindex="0" aria-label="Mole hole 7"></div>
+        <div class="square" id="sq8" role="button" tabindex="0" aria-label="Mole hole 8"></div>
+        <div class="square" id="sq9" role="button" tabindex="0" aria-label="Mole hole 9"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- End-of-round modal overlay -->
+  <div id="endModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content">
+      <h2>Round Over</h2>
+      <p id="final-score" class="final-score">Your final score is: 0</p>
+      <p id="modal-high" class="modal-high"></p>
+      <div class="modal-actions">
+        <button id="play-again" class="btn primary">Play Again</button>
+        <button id="modal-close" class="btn">Close</button>
+      </div>
     </div>
-    <div class="high-score-display">
-        <div class="label">🏆 High Score 🏆</div>
-        <span id="high-score">0</span>
-    </div>
-   <div class="stats">
-        <div class="stat-item">
-            <b>Score</b>
-            <span id="score">0</span>
-        </div>
-        <div class="stat-item">
-            <b>Time</b>
-            <span id="time-left">30</span>
-        </div>
-   </div>
-    <div class="controls">
-        <button id="start-button">Start Game</button>
-        <button id="pause-button" disabled>Pause</button>
-        <button id="restart-button" disabled>Restart</button>
-        <button id="reset-highscore-button">Reset High Score</button>
-    </div>
-   <h2 id="final-score"></h2>
-   <div id="high-score-message" class="high-score-message"></div>
-    <div class="grid">
-        <div class="square" id="1"></div>
-        <div class="square" id="2"></div>
-        <div class="square" id="3"></div>
-        <div class="square" id="4"></div>
-        <div class="square" id="5"></div>
-        <div class="square" id="6"></div>
-        <div class="square" id="7"></div>
-        <div class="square" id="8"></div>
-        <div class="square" id="9"></div>
-    </div>
-    <script src="./app.js"></script>
+  </div>
+
+  <script src="./app.js"></script>
 </body>
 </html>
