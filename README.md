@@ -99,7 +99,14 @@ We welcome contributions for Hacktoberfest! Here are some ways you can contribut
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 ---
+---
+## ✨ Contributors
 
+#### Thanks to all the wonderful contributors 💖
+
+[![Contributors](https://contrib.rocks/image?repo=piyushkdas0611/whack-a-mole)](https://github.com/piyushkdas0611/whack-a-mole/graphs/contributors)
+
+---
 ## 🙏 Acknowledgments
 
 - Game assets from [source]
