@@ -59,7 +59,6 @@ We welcome contributions for Hacktoberfest! Here are some ways you can contribut
 
 ### Open Issues
 
-- [ ] Add sound effects when hitting moles
 - [ ] Implement different difficulty levels
 - [ ] Add high score functionality
 - [ ] Create animations for mole appearances
