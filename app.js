@@ -46,6 +46,10 @@ function checkHighScore() {
             highScoreMessage.style.display = 'none'
         }, 3000)
     }
+    else
+    {
+        document.querySelector('.stats').style.display = 'block'
+    }
 }
 
 // reset to 0 on clicking reset high score button 
@@ -70,7 +74,7 @@ function resetGame() {
     timeLeft.textContent = currentTime
     final.innerHTML = ''
     highScoreMessage.style.display = 'none'
-    document.querySelector('.stats').style.display = 'block'
+    document.querySelector('.stats').style.display = 'flex'
     squares.forEach(square => square.classList.remove('mole'))
     isGamePaused = false
     isGameRunning = false
@@ -99,11 +103,13 @@ function pauseGame() {
             clearInterval(countDownTimer)
             pauseButton.textContent = 'Resume'
             isGamePaused = true
+
         } else {
             moveMole()
             countDownTimer = setInterval(countDown, 1000)
             pauseButton.textContent = 'Pause'
             isGamePaused = false
+        
         }
     }
 }
@@ -150,7 +156,7 @@ function countDown() {
         
         document.querySelector('.stats').style.display = 'none'
         isGameRunning = false
-        startButton.disabled = true
+        startButton.disabled = false
         pauseButton.disabled = true
         restartButton.disabled = false
     }
