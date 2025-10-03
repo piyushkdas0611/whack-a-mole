@@ -1,6 +1,10 @@
 /* app.js
-   Clean spawn logic (single mole), proper timer cleanup, centered mole,
-   hammer-on-hit animation, accessible keyboard support.
+   Resolved merge conflicts and consolidated features:
+   - Single-mole spawn logic (chained setTimeout) with dynamic speed
+   - Proper timer cleanup and pause/resume handling
+   - Centered mole, hammer-on-hit animation, keyboard support
+   - Start / Pause / Restart / Reset-highscore / End-of-round modal
+   - No overlapping intervals; prevents stuck state
 */
 
 const squares = Array.from(document.querySelectorAll('.square'));
@@ -72,7 +76,6 @@ function clearActiveMole() {
   if (!activeSquare) return;
   const mole = activeSquare.querySelector('.mole');
   if (mole) mole.remove();
-  // remove hammer if left
   const hammer = activeSquare ? activeSquare.querySelector('.hammer') : null;
   if (hammer) hammer.remove();
   activeSquare = null;
@@ -100,9 +103,8 @@ function spawnMole() {
 
   if (!isGameRunning || isGamePaused || currentTime <= 0) return;
 
-  // pick a random square different from previous if possible
+  // pick a random square (avoid same as previous if possible)
   let idx = Math.floor(Math.random() * squares.length);
-  // avoid same square twice in a row for variety
   if (activeSquare) {
     const prevIndex = squares.indexOf(activeSquare);
     let attempts = 0;
@@ -122,11 +124,11 @@ function spawnMole() {
   // schedule next spawn (remove current mole if not hit)
   const delay = getSpawnDelay();
   spawnTimeout = setTimeout(()=> {
-    // if mole still present (not hit), remove and spawn new
+    // if mole still present (not hit), remove it
     if (activeSquare === chosen) {
       clearActiveMole();
     }
-    // spawn next if game running
+    // spawn next if game still running
     spawnMole();
   }, delay);
 }
@@ -208,7 +210,6 @@ function pauseGame() {
     clearInterval(countDownTimer);
   } else {
     // resume timers
-    // continue countdown
     startCountDown();
     // next mole spawn a short while after resume
     spawnTimeout = setTimeout(spawnMole, 300);
