@@ -4,8 +4,11 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "jest app.test.js",
-    "vitest": "vitest run src/gameLogic.test.js"
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "test": "jest app.test.js",
+  "vitest": "vitest run src/gameLogic.test.js"
   },
   "repository": {
     "type": "git",
