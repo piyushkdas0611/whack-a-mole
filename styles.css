@@ -495,3 +495,231 @@
             }
         }
     
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3 rem;
+}
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.header img {
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-right: 0.625rem;
+}
+
+.stats {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    font-size: 1.1rem;
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+.grid {
+    margin: 0 auto;
+    width: 90vmin;
+    height: 90vmin;
+    max-width: 350px;
+    max-height: 350px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.125rem;
+}
+
+.icon {
+    width: 6rem;
+    height: 6rem;
+}
+
+.square {
+    aspect-ratio: 1;
+    width: 100%;
+    border: 1px solid black;
+    cursor: grab;
+    transition: transform 0.1s;
+}
+
+.square:hover {
+    transform: scale(0.95);
+}
+
+.mole {
+    background-image: url('./images/whack-a-mole.png');
+    background-size: cover;
+}
+
+.controls {
+    margin: 1.25rem 0;
+    display: flex;
+    gap: 0.625rem;
+    justify-content: center;
+}
+
+button {
+    padding: 0.625rem 1.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 0.313rem;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    transition: background-color 0.3s;
+    transition: all 0.3s;
+}
+
+button:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#pause-button {
+    background-color: #f44336;
+}
+
+#pause-button:hover:not(:disabled) {
+    background-color: #da190b;
+}
+
+#restart-button {
+    background-color: #2196F3;
+}
+
+#restart-button:hover:not(:disabled) {
+    background-color: #0b7dda;
+}
+
+#reset-highscore-button {
+    background-color: #ff9800;
+}
+
+#reset-highscore-button:hover:not(:disabled) {
+    background-color: #e68900;
+}
+
+.high-score-message {
+    display: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff6b00;
+    text-align: center;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #fff3cd;
+    border: 2px solid #ff6b00;
+    border-radius: 5px;
+    animation: bounce 0.5s;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    80% {
+        transform: translateY(-5px);
+    }
+}
+
+#high-score {
+    color: #ff6b00;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+@media (max-width: 30.313rem) {
+    body {
+        height: auto;
+        font-size: 0.875rem;
+    }
+
+    .grid {
+        width: 85vmin;
+        height: 85vmin;
+        gap: 0.125rem;
+    }
+}
+
+.high-score-display .label {
+    color: black;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.high-score-display {
+    padding: 1rem 1.5rem;
+    min-width: 200px;
+}
+
+.high-score-display #high-score {
+    font-size: 2.5rem;
+}
+
+.high-score-display #high-score {
+    color: #1a1010;
+    font-weight: bold;
+    font-size: 2rem;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.stat-item b {
+    color: #667eea;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-item span {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+#final-score {
+    padding-bottom: 0.5rem;
+}

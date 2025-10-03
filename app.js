@@ -31,6 +31,24 @@
         const player2Panel = document.getElementById('panel-player2');
         const particlesContainer = document.getElementById('particles');
 
+feature/UI-ENCHANMENT-AND-ADD-NEW-FETAURE-Multiplayer-Mode
+
+// compare current score with high score 
+function checkHighScore() {
+    const currentHigh = getHighScore()
+    if (result > currentHigh) {
+        setHighScore(result)
+        highScoreMessage.textContent = '🎉 New High Score! 🎉'
+        highScoreMessage.style.display = 'block'
+        setTimeout(() => {
+            highScoreMessage.style.display = 'none'
+        }, 3000)
+    }
+    else
+    {
+        document.querySelector('.stats').style.display = 'block'
+    }
+}
 
 
         const hitSound = new Audio('./audio/whack01.mp3')
@@ -208,6 +226,21 @@
     
     if (mole.classList.contains('up')) {
         mole.classList.remove('up');
+    result = 0
+    currentTime = 30
+    score.textContent = result
+    timeLeft.textContent = currentTime
+    final.innerHTML = ''
+    highScoreMessage.style.display = 'none'
+    document.querySelector('.stats').style.display = 'flex'
+    squares.forEach(square => square.classList.remove('mole'))
+    isGamePaused = false
+    isGameRunning = false
+    startButton.disabled = false
+    pauseButton.disabled = true
+    pauseButton.textContent = 'Pause'
+    restartButton.disabled = true
+}
 
         // Play hit sound
         hitSound.currentTime = 0; 
@@ -225,6 +258,20 @@
         } else {
             score1++;
             score1Display.textContent = score1;
+function pauseGame() {
+    if (isGameRunning) {
+        if (!isGamePaused) {
+            clearInterval(timer)
+            clearInterval(countDownTimer)
+            pauseButton.textContent = 'Resume'
+            isGamePaused = true
+
+        } else {
+            moveMole()
+            countDownTimer = setInterval(countDown, 1000)
+            pauseButton.textContent = 'Pause'
+            isGamePaused = false
+        
         }
 
         // Visual feedback
@@ -372,6 +419,22 @@
                 player2Panel.classList.add('active');
             }
         }
+function countDown() {
+    currentTime--
+    timeLeft.textContent = currentTime
+    if(currentTime == 0) {
+        clearInterval(countDownTimer)
+        clearInterval(timer)
+        final.innerHTML = `Your final score is : ${score.textContent}`
+        checkHighScore()
+        
+        document.querySelector('.stats').style.display = 'none'
+        isGameRunning = false
+        startButton.disabled = false
+        pauseButton.disabled = true
+        restartButton.disabled = false
+    }
+}
 
         // Update UI elements
         function updateUI() {
