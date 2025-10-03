@@ -1,7 +1,31 @@
+:root {
+    --bg-color: #f0f0f0;
+    --text-color: #333;
+    --square-bg: white;
+    --square-border: black;
+    --stats-bg: white;
+    --stats-shadow: rgba(0, 0, 0, 0.2);
+    --highscore-bg: #f8f9fa;
+    --highscore-text: #6c757d;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #f0f0f0;
+    --square-bg: #2d2d2d;
+    --square-border: #444;
+    --stats-bg: #2d2d2d;
+    --stats-shadow: rgba(0, 0, 0, 0.4);
+    --highscore-bg: #333;
+    --highscore-text: #f0f0f0;
+    --score-color: #ffffff; /* White color for score and time in dark mode */
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 body {
@@ -11,28 +35,45 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 0.3rem;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .header {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
 }
 
-.header img {
+.header .icon {
     width: 4.5rem;
     height: 4.5rem;
     margin-right: 0.625rem;
 }
 
+[data-theme="light"] .dark-icon,
+[data-theme="dark"] .light-icon {
+    display: none;
+}
+
+[data-theme="light"] .light-icon,
+[data-theme="dark"] .dark-icon {
+    display: block;
+}
+
 .stats {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 2rem;
     font-size: 1.1rem;
+    background: var(--stats-bg);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px var(--stats-shadow);
 }
+
 
 .grid {
     margin: 0 auto;
@@ -53,12 +94,96 @@ body {
 .square {
     aspect-ratio: 1;
     width: 100%;
-    border: 1px solid black;
+    background-color: var(--square-bg);
+    border: 1px solid var(--square-border);
+    cursor: grab;
+    transition: transform 0.1s, background-color 0.3s, border-color 0.3s;
+}
+
+.square:hover {
+    transform: scale(0.95);
+}
+
+/* Mole appearance animation */
+@keyframes moleAppear {
+    0% {
+        transform: translateY(100%) scale(0.9);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes moleDisappear {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes moleHit {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.9);
+        filter: brightness(1.5);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .mole {
-    background-image: url('./images/whack-a-mole.png');
-    background-size: cover;
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: moleAppear 0.15s cubic-bezier(0.25, 0.1, 0.25, 1.5) forwards;
+    will-change: transform, opacity;
+    transform-origin: bottom center;
+}
+
+.mole.hit {
+    animation: moleHit 0.3s ease-out;
+}
+
+.mole.hiding {
+    animation: moleDisappear 0.2s ease-in forwards;
+}
+
+[data-theme="dark"] .mole {
+    background-color: var(--square-bg);
+    background-image: url('./images/whack-a-mole-white.png');
+}
+
+[data-theme="light"] .mole {
+    background-color: white;
+    background-image: url('./images/whack-a-mole-black.png');
+}
+
+/* Add some depth to the mole */
+.mole::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 10%;
+    right: 10%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.square:hover .mole::after {
+    opacity: 1;
 }
 
 .controls {
@@ -68,7 +193,251 @@ body {
     justify-content: center;
 }
 
-button {
+/* Theme Toggle Button */
+.theme-toggle {
+    --size: 44px;
+    --icon-size: 20px;
+    --toggle-bg: transparent;
+    --toggle-border: #e5e7eb; /* Light gray border */
+    --toggle-color: #000000; /* Black for light mode */
+    --toggle-color-hover: #6b7280; /* Gray-500 */
+    
+    position: relative;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: var(--toggle-bg);
+    border: 1px solid var(--toggle-border);
+    color: var(--toggle-color);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove all default button styling */
+.theme-toggle,
+.theme-toggle:focus,
+.theme-toggle:active,
+.theme-toggle:hover {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-focus-ring-color: transparent;
+    outline: none;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+}
+
+/* Custom hover and active states */
+.theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--toggle-color-hover);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Dark mode styles */
+[data-theme="dark"] .theme-toggle {
+    --toggle-color: #ffffff; /* White for dark mode */
+    --toggle-color-hover: #d1d5db; /* Gray-300 */
+    --toggle-border: #4b5563; /* Gray-600 */
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Remove all focus rings and outlines */
+.theme-toggle::-moz-focus-inner {
+    border: 0;
+}
+
+.theme-toggle:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Ensure no green highlight on mobile */
+.theme-toggle::selection {
+    background: transparent;
+}
+
+.theme-toggle::-moz-selection {
+    background: transparent;
+}
+
+/* For WebKit browsers */
+.theme-toggle {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* For Firefox */
+.theme-toggle::-moz-focus-inner {
+    border: 0;
+}
+
+/* For Internet Explorer */
+.theme-toggle {
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+}
+
+/* Sun and Moon Icons */
+.theme-toggle svg {
+    pointer-events: none; /* Prevent any pointer events on the SVG */
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+[data-theme="light"] .sun {
+    fill: #000000; /* Black sun in light mode */
+}
+
+[data-theme="dark"] .moon {
+    fill: #ffffff; /* White moon in dark mode */
+}
+
+/* Completely disable any green highlight */
+.theme-toggle * {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    outline: none !important;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* For Chrome/Safari */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .theme-toggle {
+        -webkit-tap-highlight-color: transparent !important;
+    }
+}
+
+/* For Firefox */
+@-moz-document url-prefix() {
+    .theme-toggle {
+        -moz-user-focus: ignore;
+        -moz-user-select: none;
+    }
+}
+
+/* For Edge */
+@supports (-ms-ime-align: auto) {
+    .theme-toggle {
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+    }
+}
+
+/* Sun beams in light mode */
+[data-theme="light"] .sun-beams {
+    stroke: #000000; /* Black sun beams */
+}
+
+/* Moon in light mode (hidden) */
+[data-theme="light"] .moon {
+    fill: transparent;
+}
+
+/* Sun in dark mode (hidden) */
+[data-theme="dark"] .sun {
+    fill: transparent;
+}
+
+/* Sun beams in dark mode (hidden) */
+[data-theme="dark"] .sun-beams {
+    opacity: 0;
+}
+
+/* Sun and Moon */
+.sun-and-moon {
+    width: 1em;
+    height: 1em;
+    display: block;
+    fill: currentColor;
+    transition: transform 0.5s var(--ease-spring-3);
+}
+
+.sun {
+    fill: currentColor;
+    transform-origin: center center;
+    transition: transform 0.5s var(--ease-spring-3);
+}
+
+[data-theme="dark"] .sun {
+    transform: scale(1.5);
+    fill: #9ca3af; /* Gray-400 */
+}
+
+.sun-beams {
+    stroke: currentColor;
+    stroke-width: 2px;
+    stroke-linecap: round;
+    transform-origin: center center;
+    opacity: 1;
+    transition: transform 0.5s var(--ease-spring-4), opacity 0.2s var(--ease-3);
+}
+
+[data-theme="dark"] .sun-beams {
+    transform: rotateZ(-25deg);
+    opacity: 0;
+}
+
+.moon {
+    fill: none;
+    transform: translateX(0);
+    transition: transform 0.25s var(--ease-out-5);
+}
+
+[data-theme="dark"] .moon {
+    transform: translateX(-7px);
+}
+
+[data-theme="dark"] .moon > circle {
+    transform: translateX(-7px);
+}
+
+@keyframes rotate {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+@keyframes slide {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-7px);
+    }
+}
+
+button:not(.theme-toggle) {
     padding: 0.625rem 1.25rem;
     font-size: 1rem;
     cursor: pointer;
@@ -76,7 +445,7 @@ button {
     border: none;
     background-color: #4CAF50;
     color: white;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
 }
 
 button:hover:not(:disabled) {
@@ -127,12 +496,18 @@ button:disabled {
 }
 
 @keyframes bounce {
-    0%, 20%, 60%, 100% {
+
+    0%,
+    20%,
+    60%,
+    100% {
         transform: translateY(0);
     }
+
     40% {
         transform: translateY(-10px);
     }
+
     80% {
         transform: translateY(-5px);
     }
@@ -155,4 +530,61 @@ button:disabled {
         height: 85vmin;
         gap: 0.125rem;
     }
+}
+
+.high-score-display .label {
+    color: black;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.high-score-display {
+    padding: 1rem 1.5rem;
+    min-width: 200px;
+}
+
+.high-score-display #high-score {
+    font-size: 2.5rem;
+}
+
+.high-score-display {
+    margin: 0.625rem 0;
+    padding: 0.5rem 1.25rem;
+    background-color: var(--highscore-bg);
+    color: var(--highscore-text);
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 5px var(--stats-shadow);
+    text-align: center;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.stat-item b {
+    color: #667eea;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+[data-theme="dark"] .stat-item span {
+    color: var(--score-color);
+    font-weight: bold;
+}
+
+.stat-item span {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+#final-score {
+    padding-bottom: 0.5rem;
 }
