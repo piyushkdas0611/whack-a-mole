@@ -7,7 +7,7 @@
   "dev": "vite",
   "build": "vite build",
   "preview": "vite preview",
-  "test": "jest app.test.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest app.test.js",
   "vitest": "vitest run src/gameLogic.test.js"
   },
   "repository": {
@@ -17,7 +17,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/piyushkdas0611/whack-a-mole/issues"
   },
