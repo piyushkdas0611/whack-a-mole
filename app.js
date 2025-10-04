@@ -1,3 +1,4 @@
+'use client'
 // Import game logic functions
 import { 
     difficultySettings,
@@ -9,22 +10,25 @@ import {
     shouldChangeSpeed
 } from './src/gameLogic.js';
 
-const squares = document.querySelectorAll('.square')
-const mole = document.querySelector('.mole')
-const timeLeft = document.querySelector('#time-left')
-const score = document.querySelector('#score')
-const highScore = document.querySelector('#high-score')
-const final = document.querySelector('#final-score')
-const startButton = document.querySelector('#start-button')
-const pauseButton = document.querySelector('#pause-button')
-const restartButton = document.querySelector('#restart-button')
-const resetHighScoreButton = document.querySelector('#reset-highscore-button')
-const highScoreMessage = document.querySelector('#high-score-message')
-const difficultyButtons = document.querySelectorAll('.difficulty-btn')
-const currentDifficultyDisplay = document.querySelector('#current-difficulty')
+let squares, mole, timeLeft, score, highScore, final, startButton, pauseButton, restartButton, resetHighScoreButton, highScoreMessage, difficultyButtons, currentDifficultyDisplay;
 
-// Audio for hitting mole
-const hitSound = new Audio('audio/whack01.mp3')  
+function initializeElements() {
+    squares = document.querySelectorAll('.square')
+    mole = document.querySelector('.mole')
+    timeLeft = document.querySelector('#time-left')
+    score = document.querySelector('#score')
+    highScore = document.querySelector('#high-score')
+    final = document.querySelector('#final-score')
+    startButton = document.querySelector('#start-button')
+    pauseButton = document.querySelector('#pause-button')
+    restartButton = document.querySelector('#restart-button')
+    resetHighScoreButton = document.querySelector('#reset-highscore-button')
+    highScoreMessage = document.querySelector('#high-score-message')
+    difficultyButtons = document.querySelectorAll('.difficulty-btn')
+    currentDifficultyDisplay = document.querySelector('#current-difficulty')
+}
+
+let hitSound;
 
 let result = 0
 let hit = 0
@@ -35,6 +39,10 @@ let isGamePaused = false
 let isGameRunning = false
 let currentDifficulty = 'easy'
 
+function initializeAudio() {
+    hitSound = new Audio('audio/whack01.mp3')
+}
+
 // HIGH SCORE- from local storage 
 function getHighScore() {
     return parseInt(localStorage.getItem(`whackAMoleHighScore_${currentDifficulty}`)) || 0
@@ -42,11 +50,11 @@ function getHighScore() {
 
 function setHighScore(scoreValue) {
     localStorage.setItem(`whackAMoleHighScore_${currentDifficulty}`, scoreValue)
-    highScore.textContent = scoreValue
+    if (highScore) highScore.textContent = scoreValue
 }
 
 function updateHighScoreDisplay() {
-    highScore.textContent = getHighScore()
+    if (highScore) highScore.textContent = getHighScore()
 }
 
 // compare current score with high score 
@@ -81,31 +89,34 @@ function resetHighScore() {
 function resetGame() {
     clearInterval(timer)
     clearInterval(countDownTimer)
-    
+
     result = 0
     currentTime = getInitialTime(currentDifficulty)
-    score.textContent = result
-    timeLeft.textContent = currentTime
-    final.innerHTML = ''
-    highScoreMessage.style.display = 'none'
-    document.querySelector('.stats').style.display = 'flex'
-    squares.forEach(square => square.classList.remove('mole'))
+    if (score) score.textContent = result
+    if (timeLeft) timeLeft.textContent = currentTime
+    if (final) final.innerHTML = ''
+    if (highScoreMessage) highScoreMessage.style.display = 'none'
+    const stats = document.querySelector('.stats')
+    if (stats) stats.style.display = 'flex'
+    if (squares) squares.forEach(square => square.classList.remove('mole'))
     resetMolePosition()
     isGamePaused = false
     isGameRunning = false
-    startButton.disabled = false
-    pauseButton.disabled = true
-    pauseButton.textContent = 'Pause'
-    restartButton.disabled = true
+    if (startButton) startButton.disabled = false
+    if (pauseButton) {
+        pauseButton.disabled = true
+        pauseButton.textContent = 'Pause'
+    }
+    if (restartButton) restartButton.disabled = true
 }
 
 function startGame() {
     if (!isGameRunning) {
         resetGame()
         isGameRunning = true
-        startButton.disabled = true
-        pauseButton.disabled = false
-        restartButton.disabled = false
+        if (startButton) startButton.disabled = true
+        if (pauseButton) pauseButton.disabled = false
+        if (restartButton) restartButton.disabled = false
         moveMole()
         countDownTimer = setInterval(countDown, 1000)
     }
@@ -116,20 +127,21 @@ function pauseGame() {
         if (!isGamePaused) {
             clearInterval(timer)
             clearInterval(countDownTimer)
-            pauseButton.textContent = 'Resume'
+            if (pauseButton) pauseButton.textContent = 'Resume'
             isGamePaused = true
 
         } else {
             moveMole()
             countDownTimer = setInterval(countDown, 1000)
-            pauseButton.textContent = 'Pause'
+            if (pauseButton) pauseButton.textContent = 'Pause'
             isGamePaused = false
-        
+
         }
     }
 }
 
 function randomSquare() {
+    if (!squares) return
     squares.forEach(square => {
         square.classList.remove('mole')
     })
@@ -140,23 +152,26 @@ function randomSquare() {
     hit = randomSquare.id
 }
 
-squares.forEach(square => {
-    square.addEventListener('mousedown', () => {
-        if(square.id == hit && isGameRunning && !isGamePaused){
-           // Use enhanced scoring from gameLogic
-            result = increaseScore(result, currentDifficulty, currentTime)
-            score.textContent = result
-            hit = null
+function addSquareListeners() {
+    if (!squares) return
+    squares.forEach(square => {
+        square.addEventListener('mousedown', () => {
+            if(square.id == hit && isGameRunning && !isGamePaused){
+               // Use enhanced scoring from gameLogic
+                result = increaseScore(result, currentDifficulty, currentTime)
+                if (score) score.textContent = result
+                hit = null
 
-            // Play hit sound
-            hitSound.currentTime = 0   // Restart if clicked rapidly
-            hitSound.play().catch(err => {
-                // Handle audio play errors (browser autoplay policy)
-                console.log('Audio play prevented:', err)
-            })
-        }
+                // Play hit sound
+                hitSound.currentTime = 0   // Restart if clicked rapidly
+                hitSound.play().catch(err => {
+                    // Handle audio play errors (browser autoplay policy)
+                    console.log('Audio play prevented:', err)
+                })
+            }
+        })
     })
-})
+}
 
 function moveMole() {
     clearInterval(timer)
@@ -166,7 +181,7 @@ function moveMole() {
 
 function countDown() {
     currentTime--
-    timeLeft.textContent = currentTime
+    if (timeLeft) timeLeft.textContent = currentTime
     // Check if speed should change (based on difficulty settings)
     if (shouldChangeSpeed(currentTime, currentDifficulty)) {
         moveMole() // Update to faster speed
@@ -174,42 +189,51 @@ function countDown() {
     if(currentTime == 0) {
         clearInterval(countDownTimer)
         clearInterval(timer)
-        final.textContent = `Your final score is : ${result}`
-        document.querySelector('.stats').style.display = 'flex'
+        if (final) final.textContent = `Your final score is : ${result}`
+        const stats = document.querySelector('.stats')
+        if (stats) stats.style.display = 'flex'
         isGameRunning = false
-        startButton.disabled = true
-        pauseButton.disabled = true
-        restartButton.disabled = false
+        if (startButton) startButton.disabled = true
+        if (pauseButton) pauseButton.disabled = true
+        if (restartButton) restartButton.disabled = false
          // Remove any remaining moles
-        squares.forEach(square => square.classList.remove('mole'))
+        if (squares) squares.forEach(square => square.classList.remove('mole'))
     }
 }
-// Difficulty selection handler
-difficultyButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Only allow difficulty change when game is not running
-        if (!isGameRunning) {
-            // Update active button styling
-            difficultyButtons.forEach(b => b.classList.remove('active'))
-            btn.classList.add('active')
+function addEventListeners() {
+    // Difficulty selection handler
+    if (!difficultyButtons) return
+    difficultyButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Only allow difficulty change when game is not running
+            if (!isGameRunning) {
+                // Update active button styling
+                difficultyButtons.forEach(b => b.classList.remove('active'))
+                btn.classList.add('active')
 
-            // Set new difficulty
-            currentDifficulty = btn.dataset.level
-            currentDifficultyDisplay.textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1)
+                // Set new difficulty
+                currentDifficulty = btn.dataset.level
+                if (currentDifficultyDisplay) currentDifficultyDisplay.textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1)
 
-            // Reset game with new difficulty settings
-            resetGame()
-            updateHighScoreDisplay()
-        }
+                // Reset game with new difficulty settings
+                resetGame()
+                updateHighScoreDisplay()
+            }
+        })
     })
-})
-// Event listeners
-startButton.addEventListener('click', startGame)
-pauseButton.addEventListener('click', pauseGame)
-restartButton.addEventListener('click', resetGame)
-resetHighScoreButton.addEventListener('click', resetHighScore)
+    // Event listeners
+    if (startButton) startButton.addEventListener('click', startGame)
+    if (pauseButton) pauseButton.addEventListener('click', pauseGame)
+    if (restartButton) restartButton.addEventListener('click', resetGame)
+    if (resetHighScoreButton) resetHighScoreButton.addEventListener('click', resetHighScore)
+}
 
-// Initialize
-resetMolePosition()
-resetGame()
-updateHighScoreDisplay()
+export function initializeGame() {
+    initializeElements()
+    initializeAudio()
+    resetMolePosition()
+    resetGame()
+    updateHighScoreDisplay()
+    addEventListeners()
+    addSquareListeners()
+}

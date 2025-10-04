@@ -2,6 +2,9 @@
  * @jest-environment jsdom
  */
 
+import { jest } from '@jest/globals';
+import { initializeGame } from './app.js';
+
 describe('Whack-a-Mole Game', () => {
     beforeEach(() => {
         // Remove document declaration since it's already provided by jsdom
@@ -24,14 +27,14 @@ describe('Whack-a-Mole Game', () => {
             </div>
         `;
 
+        // Initialize the game after DOM is set
+        initializeGame();
+
         // Reset any timers
         jest.useFakeTimers();
-        
+
         // Clear any existing module cache
         jest.resetModules();
-        
-        // Import the game logic
-        require('./app.js');
     });
 
     afterEach(() => {
