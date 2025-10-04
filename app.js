@@ -22,6 +22,7 @@ const resetHighScoreButton = document.querySelector('#reset-highscore-button')
 const highScoreMessage = document.querySelector('#high-score-message')
 const difficultyButtons = document.querySelectorAll('.difficulty-btn')
 const currentDifficultyDisplay = document.querySelector('#current-difficulty')
+const srAnnouncer = document.getElementById('sr-announcer')
 
 // Audio for hitting mole
 const hitSound = new Audio('audio/whack01.mp3')  
@@ -34,6 +35,7 @@ let countDownTimer = null
 let isGamePaused = false
 let isGameRunning = false
 let currentDifficulty = 'easy'
+let selectedIndex = null // For keyboard selection
 
 // HIGH SCORE- from local storage 
 function getHighScore() {
@@ -134,11 +136,36 @@ function randomSquare() {
         square.classList.remove('mole')
     })
 
+  // --- ADDITION: clear selection on reset
+    squares.forEach(square => square.classList.remove('selected')) 
+    hit = null 
+    selectedIndex = null 
+    
     const randomIndex = spawnMole(9, true) // 9 squares, avoid repeats
     const randomSquare = squares[randomIndex]
     randomSquare.classList.add('mole')
     hit = randomSquare.id
 }
+
+// --- ADDITION: central hit function for mouse & keyboard
+function hitSquare(index) { // Add
+    if (!isGameRunning || isGamePaused) return
+    const square = squares[index]
+    if (!square) return
+    if (square.id == hit) {
+        result++
+        score.textContent = result
+        hit = null
+    }
+}
+
+// --- Mouse click updated to use central hit
+squares.forEach((square, i) => {
+    square.addEventListener('mousedown', () => {
+        hitSquare(i) // changed from original direct logic
+        setSelection(i) // ADD: highlight clicked square
+    })
+})
 
 squares.forEach(square => {
     square.addEventListener('mousedown', () => {
@@ -158,6 +185,25 @@ squares.forEach(square => {
     })
 })
 
+// --- ADDITION: selection highlight functions
+function setSelection(i) { // Add
+    if (selectedIndex !== null && squares[selectedIndex]) {
+        squares[selectedIndex].classList.remove('selected')
+    }
+    selectedIndex = i
+    if (squares[selectedIndex]) {
+        squares[selectedIndex].classList.add('selected')
+        squares[selectedIndex].focus({ preventScroll: true })
+        if (srAnnouncer) srAnnouncer.textContent = `Selected Hole ${selectedIndex + 1}`
+    }
+}
+
+function clearSelection() { // Add
+    if (selectedIndex !== null && squares[selectedIndex]) {
+        squares[selectedIndex].classList.remove('selected')
+    }
+    selectedIndex = null
+}
 function moveMole() {
     clearInterval(timer)
     const speed = getCurrentSpeed(currentTime, currentDifficulty)
@@ -203,6 +249,57 @@ difficultyButtons.forEach(btn => {
         }
     })
 })
+
+// --- ADDITION: keyboard event listener
+document.addEventListener('keydown', (e) => { // Add
+    // Ignore inputs
+    const tag = document.activeElement.tagName
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return
+
+    // Number keys 1-9 → hit square
+    if (/^[1-9]$/.test(e.key)) {
+        const idx = parseInt(e.key, 10) - 1
+        setSelection(idx)
+        hitSquare(idx)
+        e.preventDefault()
+        return
+    }
+
+    // Arrow key navigation
+    const COLS = 3
+    if (selectedIndex === null) setSelection(4) // default center
+    let row = Math.floor(selectedIndex / COLS)
+    let col = selectedIndex % COLS
+
+    switch(e.key) {
+        case 'ArrowLeft':
+            col = Math.max(0, col -1)
+            setSelection(row*COLS + col)
+            e.preventDefault()
+            break
+        case 'ArrowRight':
+            col = Math.min(COLS -1, col +1)
+            setSelection(row*COLS + col)
+            e.preventDefault()
+            break
+        case 'ArrowUp':
+            row = Math.max(0, row -1)
+            setSelection(row*COLS + col)
+            e.preventDefault()
+            break
+        case 'ArrowDown':
+            row = Math.min(2, row +1)
+            setSelection(row*COLS + col)
+            e.preventDefault()
+            break
+        case 'Enter':
+        case ' ':
+            hitSquare(selectedIndex)
+            e.preventDefault()
+            break
+    }
+})
+
 // Event listeners
 startButton.addEventListener('click', startGame)
 pauseButton.addEventListener('click', pauseGame)
