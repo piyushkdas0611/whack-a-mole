@@ -10,23 +10,8 @@ import {
     shouldChangeSpeed
 } from './src/gameLogic.js';
 
-const squares = document.querySelectorAll('.square')
-const mole = document.querySelector('.mole')
-const timeLeft = document.querySelector('#time-left')
-const score = document.querySelector('#score')
-const highScore = document.querySelector('#high-score')
-const final = document.querySelector('#final-score')
-const startButton = document.querySelector('#start-button')
-const pauseButton = document.querySelector('#pause-button')
-const restartButton = document.querySelector('#restart-button')
-const resetHighScoreButton = document.querySelector('#reset-highscore-button')
-const highScoreMessage = document.querySelector('#high-score-message')
-const difficultyButtons = document.querySelectorAll('.difficulty-btn')
-const currentDifficultyDisplay = document.querySelector('#current-difficulty')
-const srAnnouncer = document.getElementById('sr-announcer')
 
 // Audio for hitting mole
-const hitSound = new Audio('audio/whack01.mp3')  
 let squares, mole, timeLeft, score, highScore, final, startButton, pauseButton, restartButton, resetHighScoreButton, highScoreMessage, difficultyButtons, currentDifficultyDisplay;
 
 function initializeElements() {
@@ -187,35 +172,14 @@ function hitSquare(index) { // Add
     }
 }
 
-// --- Mouse click updated to use central hit
-squares.forEach((square, i) => {
-    square.addEventListener('mousedown', () => {
-        hitSquare(i) // changed from original direct logic
-        setSelection(i) // ADD: highlight clicked square
-    })
-})
-
-squares.forEach(square => {
-    square.addEventListener('mousedown', () => {
-        if(square.id == hit && isGameRunning && !isGamePaused){
-           // Use enhanced scoring from gameLogic
-            result = increaseScore(result, currentDifficulty, currentTime)
-            score.textContent = result
-            hit = null
-
-            // Play hit sound
-            hitSound.currentTime = 0   // Restart if clicked rapidly
-            hitSound.play().catch(err => {
-                // Handle audio play errors (browser autoplay policy)
-                console.log('Audio play prevented:', err)
-            })
-        }
 function addSquareListeners() {
     if (!squares) return
-    squares.forEach(square => {
+    squares.forEach((square, i) => {
         square.addEventListener('mousedown', () => {
+            hitSquare(i)
+            setSelection(i)
             if(square.id == hit && isGameRunning && !isGamePaused){
-               // Use enhanced scoring from gameLogic
+                // Use enhanced scoring from gameLogic
                 result = increaseScore(result, currentDifficulty, currentTime)
                 if (score) score.textContent = result
                 hit = null
@@ -298,7 +262,7 @@ function addEventListeners() {
             }
         })
     })
-})
+
 
 // --- ADDITION: keyboard event listener
 document.addEventListener('keydown', (e) => { // Add
@@ -376,3 +340,8 @@ export function initializeGame() {
     addEventListeners()
     addSquareListeners()
 }
+
+// Initialize the game when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGame()
+})
