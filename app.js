@@ -10,6 +10,8 @@ import {
     shouldChangeSpeed
 } from './src/gameLogic.js';
 
+
+// Audio for hitting mole
 let squares, mole, timeLeft, score, highScore, final, startButton, pauseButton, restartButton, resetHighScoreButton, highScoreMessage, difficultyButtons, currentDifficultyDisplay;
 
 function initializeElements() {
@@ -38,6 +40,7 @@ let countDownTimer = null
 let isGamePaused = false
 let isGameRunning = false
 let currentDifficulty = 'easy'
+let selectedIndex = null // For keyboard selection
 
 function initializeAudio() {
     hitSound = new Audio('audio/whack01.mp3')
@@ -146,18 +149,37 @@ function randomSquare() {
         square.classList.remove('mole')
     })
 
+  // --- ADDITION: clear selection on reset
+    squares.forEach(square => square.classList.remove('selected')) 
+    hit = null 
+    selectedIndex = null 
+    
     const randomIndex = spawnMole(9, true) // 9 squares, avoid repeats
     const randomSquare = squares[randomIndex]
     randomSquare.classList.add('mole')
     hit = randomSquare.id
 }
 
+// --- ADDITION: central hit function for mouse & keyboard
+function hitSquare(index) { // Add
+    if (!isGameRunning || isGamePaused) return
+    const square = squares[index]
+    if (!square) return
+    if (square.id == hit) {
+        result++
+        score.textContent = result
+        hit = null
+    }
+}
+
 function addSquareListeners() {
     if (!squares) return
-    squares.forEach(square => {
+    squares.forEach((square, i) => {
         square.addEventListener('mousedown', () => {
+            hitSquare(i)
+            setSelection(i)
             if(square.id == hit && isGameRunning && !isGamePaused){
-               // Use enhanced scoring from gameLogic
+                // Use enhanced scoring from gameLogic
                 result = increaseScore(result, currentDifficulty, currentTime)
                 if (score) score.textContent = result
                 hit = null
@@ -173,6 +195,25 @@ function addSquareListeners() {
     })
 }
 
+// --- ADDITION: selection highlight functions
+function setSelection(i) { // Add
+    if (selectedIndex !== null && squares[selectedIndex]) {
+        squares[selectedIndex].classList.remove('selected')
+    }
+    selectedIndex = i
+    if (squares[selectedIndex]) {
+        squares[selectedIndex].classList.add('selected')
+        squares[selectedIndex].focus({ preventScroll: true })
+        if (srAnnouncer) srAnnouncer.textContent = `Selected Hole ${selectedIndex + 1}`
+    }
+}
+
+function clearSelection() { // Add
+    if (selectedIndex !== null && squares[selectedIndex]) {
+        squares[selectedIndex].classList.remove('selected')
+    }
+    selectedIndex = null
+}
 function moveMole() {
     clearInterval(timer)
     const speed = getCurrentSpeed(currentTime, currentDifficulty)
@@ -221,6 +262,68 @@ function addEventListeners() {
             }
         })
     })
+
+
+// --- ADDITION: keyboard event listener
+document.addEventListener('keydown', (e) => { // Add
+    // Ignore inputs
+    const tag = document.activeElement.tagName
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return
+
+    // Number keys 1-9 → hit square
+    if (/^[1-9]$/.test(e.key)) {
+        const idx = parseInt(e.key, 10) - 1
+        setSelection(idx)
+        hitSquare(idx)
+        e.preventDefault()
+        return
+    }
+
+    // Arrow key navigation
+    const COLS = 3
+    if (selectedIndex === null) setSelection(4) // default center
+    let row = Math.floor(selectedIndex / COLS)
+    let col = selectedIndex % COLS
+
+    switch(e.key) {
+        case 'ArrowLeft':
+            col = Math.max(0, col -1)
+            setSelection(row*COLS + col)
+            e.preventDefault()
+            break
+        case 'ArrowRight':
+            col = Math.min(COLS -1, col +1)
+            setSelection(row*COLS + col)
+            e.preventDefault()
+            break
+        case 'ArrowUp':
+            row = Math.max(0, row -1)
+            setSelection(row*COLS + col)
+            e.preventDefault()
+            break
+        case 'ArrowDown':
+            row = Math.min(2, row +1)
+            setSelection(row*COLS + col)
+            e.preventDefault()
+            break
+        case 'Enter':
+        case ' ':
+            hitSquare(selectedIndex)
+            e.preventDefault()
+            break
+    }
+})
+
+// Event listeners
+startButton.addEventListener('click', startGame)
+pauseButton.addEventListener('click', pauseGame)
+restartButton.addEventListener('click', resetGame)
+resetHighScoreButton.addEventListener('click', resetHighScore)
+
+// Initialize
+resetMolePosition()
+resetGame()
+updateHighScoreDisplay()
     // Event listeners
     if (startButton) startButton.addEventListener('click', startGame)
     if (pauseButton) pauseButton.addEventListener('click', pauseGame)
@@ -237,3 +340,8 @@ export function initializeGame() {
     addEventListeners()
     addSquareListeners()
 }
+
+// Initialize the game when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGame()
+})
