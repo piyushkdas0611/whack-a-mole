@@ -61,6 +61,11 @@ body {
     background-size: cover;
 }
 
+/* --- ADDITION: selected square highlight */
+.square.selected { 
+    outline: 3px solid #ff0000; /* red highlight for keyboard selection */
+    transition: outline 0.2s ease-in-out;
+}
 .controls {
     margin: 1.25rem 0;
     display: flex;
@@ -156,3 +161,16 @@ button:disabled {
         gap: 0.125rem;
     }
 }
+
+/* --- ADDITION: screen-reader only class */
+.sr-only { 
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+} 
