@@ -329,74 +329,77 @@ function countDown() {
 const storageKey = 'theme-preference';
 
 const onClick = () => {
-    // flip current value
-    theme.value = theme.value === 'light' ? 'dark' : 'light';
-    setPreference();
-}
+  // flip current value
+  theme.value = theme.value === 'light' ? 'dark' : 'light';
+  setPreference();
+};
 
 const getColorPreference = () => {
-    if (localStorage.getItem(storageKey))
-        return localStorage.getItem(storageKey);
-    else
-        return window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
-}
+  if (localStorage.getItem(storageKey)) return localStorage.getItem(storageKey);
+  else
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+};
 
 const setPreference = () => {
-    localStorage.setItem(storageKey, theme.value);
-    reflectPreference();
-}
+  localStorage.setItem(storageKey, theme.value);
+  reflectPreference();
+};
 
 const reflectPreference = () => {
-    document.firstElementChild.setAttribute('data-theme', theme.value);
-    document.querySelector('#theme-toggle')?.setAttribute('aria-label', theme.value);
-}
+  document.firstElementChild.setAttribute('data-theme', theme.value);
+  document
+    .querySelector('#theme-toggle')
+    ?.setAttribute('aria-label', theme.value);
+};
 
 const theme = {
-    value: getColorPreference(),
-}
+  value: getColorPreference(),
+};
 
 // set early so no page flashes / CSS is made aware
 reflectPreference();
 
 window.onload = () => {
-    // set on load so screen readers can see latest value on the button
-    reflectPreference();
+  // set on load so screen readers can see latest value on the button
+  reflectPreference();
 
-    // now this script can find and listen for clicks on the control
-    document.querySelector('#theme-toggle').addEventListener('click', onClick);
-}
+  // now this script can find and listen for clicks on the control
+  document.querySelector('#theme-toggle').addEventListener('click', onClick);
+};
 
 // sync with system changes
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({matches:isDark}) => {
+window
+  .matchMedia('(prefers-color-scheme: dark)')
+  .addEventListener('change', ({ matches: isDark }) => {
     theme.value = isDark ? 'dark' : 'light';
     setPreference();
-});
+  });
 
 function addEventListeners() {
   // Difficulty selection handler
   difficultyButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-        // Only allow difficulty change when game is not running
-        if (!isGameRunning) {
-          // Update active button styling
-          difficultyButtons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
+      // Only allow difficulty change when game is not running
+      if (!isGameRunning) {
+        // Update active button styling
+        difficultyButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-          // Set new difficulty
-          currentDifficulty = btn.dataset.level;
-          if (currentDifficultyDisplay)
-            currentDifficultyDisplay.textContent =
-              currentDifficulty.charAt(0).toUpperCase() +
-              currentDifficulty.slice(1);
+        // Set new difficulty
+        currentDifficulty = btn.dataset.level;
+        if (currentDifficultyDisplay)
+          currentDifficultyDisplay.textContent =
+            currentDifficulty.charAt(0).toUpperCase() +
+            currentDifficulty.slice(1);
 
-          // Reset game with new difficulty settings
-          resetGame();
-          updateHighScoreDisplay();
-        }
-      });
+        // Reset game with new difficulty settings
+        resetGame();
+        updateHighScoreDisplay();
+      }
     });
+  });
 
   // Keyboard event listener
   document.addEventListener('keydown', e => {
