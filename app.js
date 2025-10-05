@@ -337,7 +337,7 @@ const onClick = () => {
 const getColorPreference = () => {
   if (localStorage.getItem(storageKey)) return localStorage.getItem(storageKey);
   else
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
 };
@@ -370,12 +370,14 @@ window.onload = () => {
 };
 
 // sync with system changes
-window
-  .matchMedia('(prefers-color-scheme: dark)')
-  .addEventListener('change', ({ matches: isDark }) => {
-    theme.value = isDark ? 'dark' : 'light';
-    setPreference();
-  });
+if (window.matchMedia) {
+  window
+    .matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', ({ matches: isDark }) => {
+      theme.value = isDark ? 'dark' : 'light';
+      setPreference();
+    });
+}
 
 function addEventListeners() {
   // Difficulty selection handler
