@@ -337,7 +337,8 @@ const onClick = () => {
 const getColorPreference = () => {
   if (localStorage.getItem(storageKey)) return localStorage.getItem(storageKey);
   else
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    return window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
 };
