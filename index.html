@@ -43,16 +43,20 @@
     <h2 id="final-score"></h2>
     <div id="high-score-message" class="high-score-message"></div>
     <div class="grid">
-        <div class="square" id="1"></div>
-        <div class="square" id="2"></div>
-        <div class="square" id="3"></div>
-        <div class="square" id="4"></div>
-        <div class="square" id="5"></div>
-        <div class="square" id="6"></div>
-        <div class="square" id="7"></div>
-        <div class="square" id="8"></div>
-        <div class="square" id="9"></div>
+        <div class="square" id="1" role="button" tabindex="0" data-index="0" aria-label="Hole 1"></div>
+        <div class="square" id="2" role="button" tabindex="0" data-index="1" aria-label="Hole 2"></div>
+        <div class="square" id="3" role="button" tabindex="0" data-index="2" aria-label="Hole 3"></div>
+        <div class="square" id="4" role="button" tabindex="0" data-index="3" aria-label="Hole 4"></div>
+        <div class="square" id="5" role="button" tabindex="0" data-index="4" aria-label="Hole 5"></div>
+        <div class="square" id="6" role="button" tabindex="0" data-index="5" aria-label="Hole 6"></div>
+        <div class="square" id="7" role="button" tabindex="0" data-index="6" aria-label="Hole 7"></div>
+        <div class="square" id="8" role="button" tabindex="0" data-index="7" aria-label="Hole 8"></div>
+        <div class="square" id="9" role="button" tabindex="0" data-index="8" aria-label="Hole 9"></div>
     </div>
+
+      <!-- Screen reader announcer -->
+    <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
+    
     <script type="module" src="./app.js"></script>
 </body>
 </html>
