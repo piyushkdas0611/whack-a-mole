@@ -216,29 +216,26 @@ function hitSquare(index) { // Add
 }
 
 function addSquareListeners() {
-    if (!squares) return
-    squares.forEach((square, i) => {
-        square.addEventListener('mousedown', () => {
-            hitSquare(i)
-            setSelection(i)
-            if(square.id == hit && isGameRunning && !isGamePaused){
-                // Use enhanced scoring from gameLogic
-                result = increaseScore(result, currentDifficulty, currentTime)
-                if (score) score.textContent = result
-                hit = null
+    if (!squares) return;
+    try {
+        squares.forEach((square, i) => {
+            square.addEventListener('mousedown', () => {
+                hitSquare(i);
+                setSelection(i);
+                if(square.id == hit && isGameRunning && !isGamePaused){
+                    result = increaseScore(result, currentDifficulty, currentTime);
+                    if (score) score.textContent = result;
+                    hit = null;
 
-                // Play hit sound
-                hitSound.currentTime = 0   // Restart if clicked rapidly
-                hitSound.play().catch(err => {
-                    // Handle audio play errors (browser autoplay policy)
-                    console.log('Audio play prevented:', err)
-                })
-            }
-        } else {
-            log('Error: squares not initialized');
-        }
+                    hitSound.currentTime = 0;
+                    hitSound.play().catch(err => {
+                        console.log('Audio play prevented:', err);
+                    });
+                }
+            });
+        });
     } catch (error) {
-        log(`Error in randomSquare: ${error.message}`);
+        log(`Error in addSquareListeners: ${error.message}`);
     }
 }
 
