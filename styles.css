@@ -384,3 +384,57 @@ button:disabled {
 #final-score {
     padding-bottom: 0;
 }
+
+
+/* Theme toggle button */
+#theme-toggle {
+  margin-left: auto;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+#theme-toggle:hover {
+  transform: scale(1.2);
+}
+
+/* Dark mode styles */
+body.dark {
+  background: #1e1e1e;
+  color: #f8f9fa;
+}
+
+body.dark .header h1,
+body.dark #high-score,
+body.dark .stat-item span,
+body.dark #final-score {
+  color: #f8f9fa;
+}
+
+body.dark .square {
+  background: #2a2a2a;
+  border-color: #444;
+}
+
+body.dark .square:hover {
+  background: #3a3a3a;
+  border-color: #aaa;
+}
+
+body.dark .controls button,
+body.dark .difficulty-btn,
+body.dark .stats,
+body.dark .high-score-display,
+body.dark .high-score-message {
+  background-color: #2c2c2c;
+  color: #f8f9fa;
+  border-color: #555;
+}
+
+body.dark .difficulty-btn.active {
+  background: #f8f9fa;
+  color: #2c2c2c;
+}
