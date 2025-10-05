@@ -4,6 +4,6 @@ export default {
   verbose: true,
   transform: {},
   moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1'
-  }
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
 };
