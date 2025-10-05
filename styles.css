@@ -73,6 +73,8 @@ body {
 [data-theme="light"] .light-icon,
 [data-theme="dark"] .dark-icon {
     display: block;
+}
+
 /* NEW: Difficulty Selector Styles */
 .difficulty-selector {
   text-align: center;

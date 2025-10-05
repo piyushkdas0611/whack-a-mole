@@ -1,4 +1,3 @@
-'use client';
 // Import game logic functions
 import {
   difficultySettings,
@@ -375,8 +374,9 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({m
     setPreference();
 });
 
-// Difficulty selection handler
-difficultyButtons.forEach(btn => {
+function addEventListeners() {
+  // Difficulty selection handler
+  difficultyButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         // Only allow difficulty change when game is not running
         if (!isGameRunning) {
@@ -397,7 +397,6 @@ difficultyButtons.forEach(btn => {
         }
       });
     });
-  }
 
   // Keyboard event listener
   document.addEventListener('keydown', e => {

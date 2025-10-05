@@ -8,14 +8,34 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self';"
     />
-    <title>Whack A Mole</title>
-    <script type="module" crossorigin src="/assets/index-DouqF3Dm.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CGKbKfve.css">
+    <title>Whack A Mole</title>
+    <script type="module" crossorigin src="/assets/index-DLgeVMQb.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C4VK3GWV.css">
   </head>
   <body>
     <div class="header">
-      <img src="/assets/whack-a-mole-Ck2gdYcT.png" alt="" class="icon" />
-      <h1>Whack A Mole</h1>
+        <img src="/assets/whack-a-mole-black-Ck2gdYcT.png" alt="" class="icon light-icon">
+        <img src="/assets/whack-a-mole-white-D8rtIdIt.png" alt="" class="icon dark-icon">
+        <h1>Whack A Mole</h1>
+        <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite" style="-webkit-tap-highlight-color: transparent !important; tap-highlight-color: transparent !important; outline: none !important; -webkit-appearance: none !important; appearance: none !important; background: transparent !important; border: 1px solid #e5e7eb !important; color: inherit !important; -webkit-user-select: none !important; -moz-user-select: none !important; -ms-user-select: none !important; user-select: none !important;">
+            <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+                <mask class="moon" id="moon-mask">
+                    <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                    <circle cx="24" cy="10" r="6" fill="black" />
+                </mask>
+                <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
+                <g class="sun-beams" stroke="currentColor">
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </g>
+            </svg>
+        </button>
     </div>
     <div class="high-score-display">
       <div class="label">🏆 High Score 🏆</div>
@@ -123,6 +143,6 @@
 
     <!-- Screen reader announcer -->
     <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
-
+
   </body>
 </html>
