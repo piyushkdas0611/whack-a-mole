@@ -4,10 +4,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self';"
+    />
     <title>Whack A Mole</title>
-
-    <script type="module" crossorigin src="/assets/index-D5lqYqOB.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CGKbKfve.css" />
+    <script type="module" crossorigin src="/assets/index-DouqF3Dm.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CGKbKfve.css">
   </head>
   <body>
     <div class="header">
@@ -20,9 +23,10 @@
     </div>
     <div class="difficulty-selector">
       <label><b>Select Difficulty:</b></label>
-      <button class="difficulty-btn active" data-level="easy">Easy</button>
+      <button class="difficulty-btn" data-level="easy">Easy</button>
       <button class="difficulty-btn" data-level="medium">Medium</button>
       <button class="difficulty-btn" data-level="hard">Hard</button>
+      <span id="current-difficulty" style="display: none"></span>
     </div>
     <div class="stats">
       <div class="stat-item">
@@ -31,7 +35,7 @@
       </div>
       <div class="stat-item">
         <b>Time</b>
-        <span id="time-left">30</span>
+        <span id="time-left"></span>
       </div>
     </div>
     <div class="controls">
@@ -42,8 +46,6 @@
     </div>
     <h2 id="final-score"></h2>
     <div id="high-score-message" class="high-score-message"></div>
-
-    <!-- Grid with keyboard accessibility -->
     <div class="grid">
       <div
         class="square"
@@ -121,5 +123,6 @@
 
     <!-- Screen reader announcer -->
     <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
+
   </body>
 </html>
