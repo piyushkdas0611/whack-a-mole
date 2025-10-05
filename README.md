@@ -26,19 +26,6 @@ Test your reflexes by whacking the moles as they pop up randomly!
 ### Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/piyushkdas0611/whack-a-mole.git
-   cd whack-a-mole
-   ```
-
-### Prerequisites
-
-- Node.js (for running tests)
-- Modern web browser
-
-### Installation
-
-1. Clone the repository:
 
 ```bash
 git clone https://github.com/yourusername/whack-a-mole.git
