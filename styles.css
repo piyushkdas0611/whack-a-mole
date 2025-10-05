@@ -1,3 +1,20 @@
+:root {
+    /* Cool, calm color palette */
+    --primary: #647DEE;
+    --primary-dark: #5C72D4;
+    --secondary: #7F8FF4;
+    --accent: #70A1FF;
+    --success: #48DBAA;
+    --warning: #FBC048;
+    --danger: #FF7F8B;
+    --background: #F1F4F9;
+    --card-bg: #FFFFFF;
+    --text: #2F3542;
+    --text-light: #747D8C;
+    --border: #E3E7ED;
+    --shadow: rgba(99, 116, 177, 0.1);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -8,13 +25,9 @@ body {
     width: 100%;
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem;
-    background: #f8f9fa;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    color: #2c3e50;
+    background: linear-gradient(135deg, #E9EFFD 0%, #F5F7FA 100%);
     padding: 1rem;
 }
 
@@ -32,6 +45,11 @@ body {
     font-weight: 600;
     color: #2c3e50;
     letter-spacing: -0.5px;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px var(--shadow);
 }
 
 .header img {
@@ -62,23 +80,24 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    border: 1px solid #e0e0e0;
-    background: white;
-    color: #6c757d;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease;
+    border: 2px solid var(--border);
+    background: #FFFFFF;
+    color: var(--text);
+    border-radius: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .difficulty-btn.active {
-    background: #2c3e50;
+    background: var(--primary);
     color: white;
-    border-color: #2c3e50;
+    border-color: var(--primary);
 }
 
-.difficulty-btn:hover:not(.active) {
-    background: #f8f9fa;
-    border-color: #2c3e50;
-    color: #2c3e50;
+.difficulty-btn:hover:not(.active):not(:disabled) {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 .difficulty-btn:disabled {
@@ -91,23 +110,52 @@ body {
     flex-direction: row;
     gap: 3rem;
     font-size: 1rem;
-    background: white;
+    background: linear-gradient(145deg, #FFFFFF, #F8FAFF);
+    border: 2px solid var(--border);
+    box-shadow: 0 4px 15px var(--shadow);
     padding: 1.5rem 2.5rem;
     border-radius: 0.5rem;
-    border: 1px solid #e0e0e0;
 }
 
+.game-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    width: 100%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 30px var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.left-panel, .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: linear-gradient(145deg, #FFFFFF, #F8FAFF);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px var(--shadow);
+    padding: 1.5rem;
+}
+
+.right-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .grid {
-    margin: 0 auto;
-    width: 90vmin;
-    height: 90vmin;
-    max-width: 350px;
-    max-height: 350px;
+    margin: 0;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
-    background: white;
+    background: #F5F7FA;
     padding: 0.5rem;
     border-radius: 0.5rem;
     border: 1px solid #e0e0e0;
@@ -121,11 +169,12 @@ body {
 .square {
     aspect-ratio: 1;
     width: 100%;
-    border: 1px solid #e0e0e0;
+    border: 2px solid var(--border);
     border-radius: 0.25rem;
     cursor: pointer;
-    transition: all 0.15s ease;
-    background: #fafafa;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #FFFFFF;
+    box-shadow: inset 0 2px 4px var(--shadow);
 }
 
 .square:active {
@@ -134,8 +183,9 @@ body {
 }
 
 .square:hover {
-    border-color: #2c3e50;
-    background: #f5f5f5;
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 .mole {
@@ -145,7 +195,8 @@ body {
 
 /* --- ADDITION: selected square highlight */
 .square.selected { 
-    outline: 3px solid #ff0000; /* red highlight for keyboard selection */
+    outline: 3px solid var(--warning);
+    box-shadow: 0 0 15px var(--warning);
     transition: outline 0.2s ease-in-out;
 }
 
@@ -163,10 +214,38 @@ button {
     font-weight: 500;
     cursor: pointer;
     border-radius: 0.25rem;
-    border: 1px solid #e0e0e0;
+    border: 2px solid var(--border);
     background-color: white;
     color: #2c3e50;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.controls button {
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.controls button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--shadow);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.controls button:hover::before {
+    width: 300%;
+    height: 300%;
 }
 
 button:hover:not(:disabled) {
@@ -187,43 +266,49 @@ button:disabled {
 }
 
 #start-button {
-    background-color: #2c3e50;
+    background: var(--success);
     color: white;
-    border-color: #2c3e50;
 }
 
 #start-button:hover:not(:disabled) {
-    background-color: #1a252f;
+    background: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 #pause-button {
-    color: #6c757d;
+    background: var(--background);
+    color: var(--text);
 }
 
 #pause-button:hover:not(:disabled) {
-    background-color: #6c757d;
-    color: white;
-    border-color: #6c757d;
+    background: var(--accent);
+    color: var(--card-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 #restart-button {
-    color: #6c757d;
+    background: var(--accent);
+    color: white;
 }
 
 #restart-button:hover:not(:disabled) {
-    background-color: #6c757d;
-    color: white;
-    border-color: #6c757d;
+    background: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 #reset-highscore-button {
-    color: #6c757d;
+    background: var(--text-light);
+    color: white;
 }
 
 #reset-highscore-button:hover:not(:disabled) {
-    background-color: #6c757d;
-    color: white;
-    border-color: #6c757d;
+    background: #C0392B;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 .high-score-message {
@@ -234,10 +319,11 @@ button:disabled {
     text-align: center;
     margin: 0;
     padding: 0.75rem 1.5rem;
-    background-color: #f8f9fa;
-    border: 1px solid #e0e0e0;
-    border-radius: 0.25rem;
-    animation: fadeIn 0.3s ease;
+    background: var(--success);
+    color: var(--card-bg);
+    box-shadow: 0 4px 15px var(--shadow);
+    transform-origin: center;
+    animation: messagePopup 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 @keyframes fadeIn {
@@ -347,9 +433,9 @@ button:disabled {
 .high-score-display {
     padding: 1rem 2rem;
     min-width: 180px;
-    background: white;
-    border-radius: 0.5rem;
-    border: 1px solid #e0e0e0;
+    background: linear-gradient(145deg, #FFFFFF, #F8FAFF);
+    border: 2px solid var(--border);
+    box-shadow: 0 4px 15px var(--shadow);
 }
 
 .high-score-display #high-score {
@@ -379,8 +465,33 @@ button:disabled {
     font-size: 1.75rem;
     font-weight: 600;
     color: #2c3e50;
+    animation: scorePopup 0.3s ease;
+}
+
+/* Add animation for score changes */
+@keyframes scorePopup {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 #final-score {
     padding-bottom: 0;
+}
+
+@keyframes messagePopup {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
