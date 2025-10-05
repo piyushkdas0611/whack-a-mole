@@ -57,89 +57,132 @@ function setHighScore(scoreValue) {
 }
 
 function updateHighScoreDisplay() {
-    if (highScore) highScore.textContent = getHighScore()
+    log('updateHighScoreDisplay called');
+    try {
+        if (highScore) {
+            const hs = getHighScore(currentDifficulty);
+            highScore.textContent = hs;
+            log(`High score displayed: ${hs}`);
+        } else {
+            log('Error: highScore element not found');
+        }
+    } catch (error) {
+        log(`Error in updateHighScoreDisplay: ${error.message}`);
+    }
 }
 
-// compare current score with high score 
 function checkHighScore() {
-    const currentHigh = getHighScore()
-    if (result > currentHigh) {
-        setHighScore(result)
-        highScoreMessage.textContent = '🎉 New High Score! 🎉'
-        highScoreMessage.style.display = 'block'
-        setTimeout(() => {
-            highScoreMessage.style.display = 'none'
-        }, 3000)
-    }
-    else
-    {
-        document.querySelector('.stats').style.display = 'block'
+    log('checkHighScore called');
+    try {
+        const currentHigh = getHighScore();
+        if (result > currentHigh) {
+            log(`New High Score! Old: ${currentHigh}, New: ${result}`);
+            setHighScore(result);
+            if (highScoreMessage) {
+                highScoreMessage.textContent = "🎉 New High Score! 🎉";
+                highScoreMessage.style.display = 'block';
+                setTimeout(() => highScoreMessage.style.display = 'none', 3000);
+            }
+        } else {
+            log(`No new high score. Current score: ${result}, High Score: ${currentHigh}`);
+        }
+    } catch (error) {
+        log(`Error in checkHighScore: ${error.message}`);
     }
 }
 
-// reset to 0 on clicking reset high score button 
 function resetHighScore() {
-     if (confirm(`Are you sure you want to reset the ${currentDifficulty.toUpperCase()} high score?`)) {
-        setHighScore(0)
-        highScoreMessage.textContent = 'High Score Reset!'
-        highScoreMessage.style.display = 'block'
-        setTimeout(() => {
-            highScoreMessage.style.display = 'none'
-        }, 2000)
+    log('resetHighScore called');
+    try {
+        if (confirm(`Reset ${currentDifficulty.toUpperCase()} High Score?`)) {
+            log(`Resetting high score for ${currentDifficulty}`);
+            setHighScore(0);
+            if (highScoreMessage) {
+                highScoreMessage.textContent = "High Score Reset!";
+                highScoreMessage.style.display = 'block';
+                setTimeout(() => highScoreMessage.style.display = 'none', 2000);
+            }
+        }
+    } catch (error) {
+        log(`Error in resetHighScore: ${error.message}`);
     }
 }
 
-function resetGame() {
-    clearInterval(timer)
-    clearInterval(countDownTimer)
-
-    result = 0
-    currentTime = getInitialTime(currentDifficulty)
-    if (score) score.textContent = result
-    if (timeLeft) timeLeft.textContent = currentTime
-    if (final) final.innerHTML = ''
-    if (highScoreMessage) highScoreMessage.style.display = 'none'
-    const stats = document.querySelector('.stats')
-    if (stats) stats.style.display = 'flex'
-    if (squares) squares.forEach(square => square.classList.remove('mole'))
-    resetMolePosition()
-    isGamePaused = false
-    isGameRunning = false
-    if (startButton) startButton.disabled = false
-    if (pauseButton) {
-        pauseButton.disabled = true
-        pauseButton.textContent = 'Pause'
+// Game Functions
+function resetGame(keepTime = false) {
+    log('resetGame called');
+    try {
+        if (timer) clearInterval(timer);
+        if (countDownTimer) clearInterval(countDownTimer);
+        result = 0;
+        if (score) score.textContent = result;
+        if (final) final.textContent = '';
+        if (squares) squares.forEach(s => s.classList.remove('mole'));
+        resetMolePosition();
+        isGamePaused = false;
+        isGameRunning = false;
+        if (startButton) startButton.disabled = false;
+        if (pauseButton) {
+            pauseButton.disabled = true;
+            pauseButton.textContent = 'Pause';
+        }
+        if (restartButton) restartButton.disabled = true;
+        if (!keepTime) {
+            currentTime = getInitialTime(currentDifficulty);
+            log(`getInitialTime in resetGame returned: ${currentTime}`);
+        }
+        updateTimerUI();
+        updateHighScoreDisplay();
+        log(`Game reset. Difficulty: ${currentDifficulty}, time: ${currentTime}`);
+    } catch (error) {
+        log(`Error in resetGame: ${error.message}`);
     }
-    if (restartButton) restartButton.disabled = true
 }
 
 function startGame() {
-    if (!isGameRunning) {
-        resetGame()
-        isGameRunning = true
-        if (startButton) startButton.disabled = true
-        if (pauseButton) pauseButton.disabled = false
-        if (restartButton) restartButton.disabled = false
-        moveMole()
-        countDownTimer = setInterval(countDown, 1000)
+    log('startGame called');
+    try {
+        if (isGameRunning) {
+            log('Game already running, ignoring startGame');
+            return;
+        }
+        resetGame(true);
+        isGameRunning = true;
+        if (startButton) startButton.disabled = true;
+        if (pauseButton) pauseButton.disabled = false;
+        if (restartButton) restartButton.disabled = false;
+        log('Starting moveMole');
+        moveMole();
+        log('Starting countDown timer');
+        countDownTimer = setInterval(countDown, 1000);
+        log('Game started successfully');
+    } catch (error) {
+        log(`Error in startGame: ${error.message}`);
     }
 }
 
 function pauseGame() {
-    if (isGameRunning) {
-        if (!isGamePaused) {
-            clearInterval(timer)
-            clearInterval(countDownTimer)
-            if (pauseButton) pauseButton.textContent = 'Resume'
-            isGamePaused = true
-
-        } else {
-            moveMole()
-            countDownTimer = setInterval(countDown, 1000)
-            if (pauseButton) pauseButton.textContent = 'Pause'
-            isGamePaused = false
-
+    log('pauseGame called');
+    try {
+        if (!isGameRunning) {
+            log('Game not running, ignoring pauseGame');
+            return;
         }
+        if (!isGamePaused) {
+            clearInterval(timer);
+            clearInterval(countDownTimer);
+            if (pauseButton) pauseButton.textContent = 'Resume';
+            isGamePaused = true;
+            log('Game paused');
+        } else {
+            moveMole();
+            countDownTimer = setInterval(countDown, 1000);
+            if (pauseButton) pauseButton.textContent = 'Pause';
+            isGamePaused = false;
+            log('Game resumed');
+        }
+    } catch (error) {
+        log(`Error in pauseGame: ${error.message}`);
     }
 }
 
@@ -191,8 +234,12 @@ function addSquareListeners() {
                     console.log('Audio play prevented:', err)
                 })
             }
-        })
-    })
+        } else {
+            log('Error: squares not initialized');
+        }
+    } catch (error) {
+        log(`Error in randomSquare: ${error.message}`);
+    }
 }
 
 // --- ADDITION: selection highlight functions
@@ -215,9 +262,15 @@ function clearSelection() { // Add
     selectedIndex = null
 }
 function moveMole() {
-    clearInterval(timer)
-    const speed = getCurrentSpeed(currentTime, currentDifficulty)
-    timer = setInterval(randomSquare, speed)
+    log('moveMole called');
+    try {
+        if (timer) clearInterval(timer);
+        const speed = getCurrentSpeed(currentTime, currentDifficulty);
+        log(`Setting mole timer with speed: ${speed}`);
+        timer = setInterval(randomSquare, speed);
+    } catch (error) {
+        log(`Error in moveMole: ${error.message}`);
+    }
 }
 
 function countDown() {

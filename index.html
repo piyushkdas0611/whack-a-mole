@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self';">
     <title>Whack A Mole</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -16,11 +17,12 @@
         <div class="label">🏆 High Score 🏆</div>
         <span id="high-score">0</span>
     </div>
-   <div class="difficulty-selector">
-    <label><b>Select Difficulty:</b></label>
-    <button class="difficulty-btn active" data-level="easy">Easy</button>
-    <button class="difficulty-btn" data-level="medium">Medium</button>
-    <button class="difficulty-btn" data-level="hard">Hard</button>
+    <div class="difficulty-selector">
+        <label><b>Select Difficulty:</b></label>
+        <button class="difficulty-btn" data-level="easy">Easy</button>
+        <button class="difficulty-btn" data-level="medium">Medium</button>
+        <button class="difficulty-btn" data-level="hard">Hard</button>
+        <span id="current-difficulty" style="display: none;"></span>
     </div>  
     <div class="stats">
         <div class="stat-item">
@@ -29,19 +31,17 @@
         </div>
         <div class="stat-item">
             <b>Time</b>
-            <span id="time-left">30</span>      
+            <span id="time-left"></span>
         </div>
-   </div>
+    </div>
     <div class="controls">
         <button id="start-button">Start Game</button>
         <button id="pause-button" disabled>Pause</button>
         <button id="restart-button" disabled>Restart</button>
         <button id="reset-highscore-button">Reset High Score</button>
     </div>
-   <h2 id="final-score"></h2>
-   <div id="high-score-message" class="high-score-message"></div>
-
-   <!-- Grid with keyboard accessibility -->
+    <h2 id="final-score"></h2>
+    <div id="high-score-message" class="high-score-message"></div>
     <div class="grid">
         <div class="square" id="1" role="button" tabindex="0" data-index="0" aria-label="Hole 1"></div>
         <div class="square" id="2" role="button" tabindex="0" data-index="1" aria-label="Hole 2"></div>
