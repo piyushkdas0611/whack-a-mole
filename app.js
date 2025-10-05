@@ -1,291 +1,330 @@
+'use client';
 // Import game logic functions
-import { 
-    difficultySettings,
-    increaseScore,
-    spawnMole,
-    resetMolePosition,
-    getCurrentSpeed,
-    getInitialTime,
-    shouldChangeSpeed
+import {
+  difficultySettings,
+  increaseScore,
+  spawnMole,
+  resetMolePosition,
+  getCurrentSpeed,
+  getInitialTime,
+  shouldChangeSpeed,
 } from './src/gameLogic.js';
 
-const squares = document.querySelectorAll('.square')
-const mole = document.querySelector('.mole')
-const timeLeft = document.querySelector('#time-left')
-const score = document.querySelector('#score')
-const highScore = document.querySelector('#high-score')
-const final = document.querySelector('#final-score')
-const startButton = document.querySelector('#start-button')
-const pauseButton = document.querySelector('#pause-button')
-const restartButton = document.querySelector('#restart-button')
-const resetHighScoreButton = document.querySelector('#reset-highscore-button')
-const highScoreMessage = document.querySelector('#high-score-message')
-const themeToggle = document.querySelector('#theme-toggle')
-
-// Remove green highlight on theme toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const themeToggle = document.getElementById('theme-toggle');
-    
-    // Prevent default touch behavior
-    themeToggle.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }, { passive: false });
-    
-    // Force remove any highlight
-    themeToggle.style.setProperty('-webkit-tap-highlight-color', 'transparent', 'important');
-    themeToggle.style.setProperty('tap-highlight-color', 'transparent', 'important');
-    
-    // Add a small delay to ensure styles are applied
-    setTimeout(() => {
-        themeToggle.blur();
-        window.getComputedStyle(themeToggle, ':active').getPropertyValue('background-color');
-    }, 100);
-});
-const difficultyButtons = document.querySelectorAll('.difficulty-btn')
-const currentDifficultyDisplay = document.querySelector('#current-difficulty')
-
 // Audio for hitting mole
-const hitSound = new Audio('audio/whack01.mp3')  
+let squares,
+  mole,
+  timeLeft,
+  score,
+  highScore,
+  final,
+  startButton,
+  pauseButton,
+  restartButton,
+  resetHighScoreButton,
+  highScoreMessage,
+  difficultyButtons,
+  currentDifficultyDisplay,
+  srAnnouncer;
 
-let result = 0
-let hit = 0
-let currentTime = 30
-let timer = null
-let countDownTimer = null
-let isGamePaused = false
-let isGameRunning = false
-let currentDifficulty = 'easy'
+function initializeElements() {
+  squares = document.querySelectorAll('.square');
+  mole = document.querySelector('.mole');
+  timeLeft = document.querySelector('#time-left');
+  score = document.querySelector('#score');
+  highScore = document.querySelector('#high-score');
+  final = document.querySelector('#final-score');
+  startButton = document.querySelector('#start-button');
+  pauseButton = document.querySelector('#pause-button');
+  restartButton = document.querySelector('#restart-button');
+  resetHighScoreButton = document.querySelector('#reset-highscore-button');
+  highScoreMessage = document.querySelector('#high-score-message');
+  difficultyButtons = document.querySelectorAll('.difficulty-btn');
+  currentDifficultyDisplay = document.querySelector('#current-difficulty');
+  srAnnouncer = document.querySelector('#sr-announcer');
+}
 
-// HIGH SCORE- from local storage 
+let hitSound;
+
+let result = 0;
+let hit = 0;
+let currentTime = 30;
+let timer = null;
+let countDownTimer = null;
+let isGamePaused = false;
+let isGameRunning = false;
+let currentDifficulty = 'easy';
+let selectedIndex = null; // For keyboard selection
+
+// Add log function for debugging
+function log(message) {
+  console.log(message);
+}
+
+function initializeAudio() {
+  hitSound = new Audio('audio/whack01.mp3');
+}
+
+// HIGH SCORE- from local storage
 function getHighScore() {
-    return parseInt(localStorage.getItem(`whackAMoleHighScore_${currentDifficulty}`)) || 0
+  return (
+    parseInt(
+      localStorage.getItem(`whackAMoleHighScore_${currentDifficulty}`)
+    ) || 0
+  );
 }
 
 function setHighScore(scoreValue) {
-    localStorage.setItem(`whackAMoleHighScore_${currentDifficulty}`, scoreValue)
-    highScore.textContent = scoreValue
+  localStorage.setItem(`whackAMoleHighScore_${currentDifficulty}`, scoreValue);
+  if (highScore) highScore.textContent = scoreValue;
 }
 
 function updateHighScoreDisplay() {
-    highScore.textContent = getHighScore()
+  log('updateHighScoreDisplay called');
+  try {
+    if (highScore) {
+      const hs = getHighScore(currentDifficulty);
+      highScore.textContent = hs;
+      log(`High score displayed: ${hs}`);
+    } else {
+      log('Error: highScore element not found');
+    }
+  } catch (error) {
+    log(`Error in updateHighScoreDisplay: ${error.message}`);
+  }
 }
 
-// compare current score with high score 
 function checkHighScore() {
-    const currentHigh = getHighScore()
+  log('checkHighScore called');
+  try {
+    const currentHigh = getHighScore();
     if (result > currentHigh) {
-        setHighScore(result)
-        highScoreMessage.textContent = '🎉 New High Score! 🎉'
-        highScoreMessage.style.display = 'block'
-        setTimeout(() => {
-            highScoreMessage.style.display = 'none'
-        }, 3000)
+      log(`New High Score! Old: ${currentHigh}, New: ${result}`);
+      setHighScore(result);
+      if (highScoreMessage) {
+        highScoreMessage.textContent = '🎉 New High Score! 🎉';
+        highScoreMessage.style.display = 'block';
+        setTimeout(() => (highScoreMessage.style.display = 'none'), 3000);
+      }
+    } else {
+      log(
+        `No new high score. Current score: ${result}, High Score: ${currentHigh}`
+      );
     }
-    else
-    {
-        document.querySelector('.stats').style.display = 'block'
-    }
+  } catch (error) {
+    log(`Error in checkHighScore: ${error.message}`);
+  }
 }
 
-// reset to 0 on clicking reset high score button 
 function resetHighScore() {
-     if (confirm(`Are you sure you want to reset the ${currentDifficulty.toUpperCase()} high score?`)) {
-        setHighScore(0)
-        highScoreMessage.textContent = 'High Score Reset!'
-        highScoreMessage.style.display = 'block'
-        setTimeout(() => {
-            highScoreMessage.style.display = 'none'
-        }, 2000)
+  log('resetHighScore called');
+  try {
+    if (confirm(`Reset ${currentDifficulty.toUpperCase()} High Score?`)) {
+      log(`Resetting high score for ${currentDifficulty}`);
+      setHighScore(0);
+      if (highScoreMessage) {
+        highScoreMessage.textContent = 'High Score Reset!';
+        highScoreMessage.style.display = 'block';
+        setTimeout(() => (highScoreMessage.style.display = 'none'), 2000);
+      }
     }
+  } catch (error) {
+    log(`Error in resetHighScore: ${error.message}`);
+  }
 }
 
-function resetGame() {
-    clearInterval(timer)
-    clearInterval(countDownTimer)
-    
-    result = 0
-    currentTime = getInitialTime(currentDifficulty)
-    score.textContent = result
-    timeLeft.textContent = currentTime
-    final.innerHTML = ''
-    highScoreMessage.style.display = 'none'
-    document.querySelector('.stats').style.display = 'flex'
-    squares.forEach(square => square.classList.remove('mole'))
-    resetMolePosition()
-    isGamePaused = false
-    isGameRunning = false
-    startButton.disabled = false
-    pauseButton.disabled = true
-    pauseButton.textContent = 'Pause'
-    restartButton.disabled = true
+function updateTimerUI() {
+  if (timeLeft) timeLeft.textContent = currentTime;
+}
+
+// Game Functions
+function resetGame(keepTime = false) {
+  log('resetGame called');
+  try {
+    if (timer) clearInterval(timer);
+    if (countDownTimer) clearInterval(countDownTimer);
+    result = 0;
+    if (score) score.textContent = result;
+    if (final) final.textContent = '';
+    if (squares) squares.forEach(s => s.classList.remove('mole'));
+    resetMolePosition();
+    isGamePaused = false;
+    isGameRunning = false;
+    if (startButton) startButton.disabled = false;
+    if (pauseButton) {
+      pauseButton.disabled = true;
+      pauseButton.textContent = 'Pause';
+    }
+    if (restartButton) restartButton.disabled = true;
+    if (!keepTime) {
+      currentTime = getInitialTime(currentDifficulty);
+      log(`getInitialTime in resetGame returned: ${currentTime}`);
+    }
+    updateTimerUI();
+    updateHighScoreDisplay();
+    log(`Game reset. Difficulty: ${currentDifficulty}, time: ${currentTime}`);
+  } catch (error) {
+    log(`Error in resetGame: ${error.message}`);
+  }
 }
 
 function startGame() {
-    if (!isGameRunning) {
-        resetGame()
-        isGameRunning = true
-        startButton.disabled = true
-        pauseButton.disabled = false
-        restartButton.disabled = false
-        moveMole()
-        countDownTimer = setInterval(countDown, 1000)
+  log('startGame called');
+  try {
+    if (isGameRunning) {
+      log('Game already running, ignoring startGame');
+      return;
     }
+    resetGame(true);
+    isGameRunning = true;
+    if (startButton) startButton.disabled = true;
+    if (pauseButton) pauseButton.disabled = false;
+    if (restartButton) restartButton.disabled = false;
+    log('Starting moveMole');
+    moveMole();
+    log('Starting countDown timer');
+    countDownTimer = setInterval(countDown, 1000);
+    log('Game started successfully');
+  } catch (error) {
+    log(`Error in startGame: ${error.message}`);
+  }
 }
 
 function pauseGame() {
-    if (isGameRunning) {
-        if (!isGamePaused) {
-            clearInterval(timer)
-            clearInterval(countDownTimer)
-            pauseButton.textContent = 'Resume'
-            isGamePaused = true
-
-        } else {
-            moveMole()
-            countDownTimer = setInterval(countDown, 1000)
-            pauseButton.textContent = 'Pause'
-            isGamePaused = false
-        
-        }
+  log('pauseGame called');
+  try {
+    if (!isGameRunning) {
+      log('Game not running, ignoring pauseGame');
+      return;
     }
+    if (!isGamePaused) {
+      clearInterval(timer);
+      clearInterval(countDownTimer);
+      if (pauseButton) pauseButton.textContent = 'Resume';
+      isGamePaused = true;
+      log('Game paused');
+    } else {
+      moveMole();
+      countDownTimer = setInterval(countDown, 1000);
+      if (pauseButton) pauseButton.textContent = 'Pause';
+      isGamePaused = false;
+      log('Game resumed');
+    }
+  } catch (error) {
+    log(`Error in pauseGame: ${error.message}`);
+  }
 }
 
-async function randomSquare() {
-    // First, remove any existing moles with animation
-    const removePromises = [];
+function randomSquare() {
+  log('randomSquare called');
+  try {
+    if (!squares) {
+      log('Error: squares not initialized');
+      return;
+    }
     squares.forEach(square => {
-        if (square.classList.contains('mole')) {
-            square.classList.add('hiding');
-            // Wait for the hide animation to complete before removing the class
-            const promise = new Promise(resolve => {
-                setTimeout(() => {
-                    square.classList.remove('mole', 'hiding');
-                    resolve();
-                }, 200); // Match this with the CSS animation duration
-            });
-            removePromises.push(promise);
-        }
+      square.classList.remove('mole');
     });
 
-    // Wait for all remove animations to complete
-    await Promise.all(removePromises);
+    // Clear selection on reset
+    squares.forEach(square => square.classList.remove('selected'));
+    hit = null;
+    selectedIndex = null;
 
-    // Then add a new mole with animation
-    const availableSquares = Array.from(squares).filter(sq => !sq.classList.contains('mole'));
-    if (availableSquares.length > 0) {
-        const randomSquare = availableSquares[Math.floor(Math.random() * availableSquares.length)];
-        randomSquare.classList.add('mole');
-        hit = randomSquare.id;
-    }
+    const randomIndex = spawnMole(9, true); // 9 squares, avoid repeats
+    const randomSquare = squares[randomIndex];
+    randomSquare.classList.add('mole');
+    hit = randomSquare.id;
+  } catch (error) {
+    log(`Error in randomSquare: ${error.message}`);
+  }
 }
 
-// Handle both mouse and touch events
-async function handleHit(square) {
-    if(square.id == hit && isGameRunning && !isGamePaused && square.classList.contains('mole')){
-        result++
-        score.textContent = result
-        hit = null
-        hitSound.currentTime = 0
-        hitSound.play()
-        
-        // Add hit effect
-        square.classList.add('hit')
-        
-        // Wait for hit animation to complete before removing the mole
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-        // Add hiding animation
-        square.classList.add('hiding');
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-        // Remove all mole-related classes
-        square.classList.remove('mole', 'hit', 'hiding');
+// Central hit function for mouse & keyboard
+function hitSquare(index) {
+  if (!isGameRunning || isGamePaused) return;
+  const square = squares[index];
+  if (!square) return;
+  if (square.id == hit) {
+    // Use enhanced scoring from gameLogic
+    result = increaseScore(result, currentDifficulty, currentTime);
+    if (score) score.textContent = result;
+    hit = null;
+
+    // Play hit sound
+    if (hitSound) {
+      hitSound.currentTime = 0; // Restart if clicked rapidly
+      hitSound.play().catch(err => {
+        // Handle audio play errors (browser autoplay policy)
+        console.log('Audio play prevented:', err);
+      });
     }
-    const randomIndex = spawnMole(9, true) // 9 squares, avoid repeats
-    const randomSquare = squares[randomIndex]
-    randomSquare.classList.add('mole')
-    hit = randomSquare.id
+  }
 }
 
-// Add event listeners for both mouse and touch
-squares.forEach(square => {
-    // Mouse events
-    square.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // Prevent text selection
-        handleHit(square);
-    });
-    
-    // Touch events
-    square.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Prevent scrolling/zooming
-        handleHit(square);
-    }, { passive: false });
-    
-    // Prevent long press context menu on mobile
-    square.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        return false;
-    });
-});
-
-async function moveMole() {
-    // Clear any existing timer to prevent multiple timers running
-    if (timer) {
-        clearInterval(timer);
-    }
-    
-    // Start a new timer that calls randomSquare
-    if(currentTime >= 20) {
-        timer = setInterval(async () => {
-            if (isGameRunning && !isGamePaused) {
-                await randomSquare();
-            }
-        }, 1000); // Slightly longer interval to allow animations to complete
-    } else if(currentTime < 20)
-        timer = setInterval(randomSquare, 100)
+function addSquareListeners() {
+  if (!squares) return;
+  squares.forEach((square, i) => {
     square.addEventListener('mousedown', () => {
-        if(square.id == hit && isGameRunning && !isGamePaused){
-           // Use enhanced scoring from gameLogic
-            result = increaseScore(result, currentDifficulty, currentTime)
-            score.textContent = result
-            hit = null
+      hitSquare(i);
+      setSelection(i);
+    });
+  });
+}
 
-            // Play hit sound
-            hitSound.currentTime = 0   // Restart if clicked rapidly
-            hitSound.play().catch(err => {
-                // Handle audio play errors (browser autoplay policy)
-                console.log('Audio play prevented:', err)
-            })
-        }
-    })
-})
+// Selection highlight functions
+function setSelection(i) {
+  if (selectedIndex !== null && squares[selectedIndex]) {
+    squares[selectedIndex].classList.remove('selected');
+  }
+  selectedIndex = i;
+  if (squares[selectedIndex]) {
+    squares[selectedIndex].classList.add('selected');
+    squares[selectedIndex].focus({ preventScroll: true });
+    if (srAnnouncer)
+      srAnnouncer.textContent = `Selected Hole ${selectedIndex + 1}`;
+  }
+}
+
+function clearSelection() {
+  if (selectedIndex !== null && squares[selectedIndex]) {
+    squares[selectedIndex].classList.remove('selected');
+  }
+  selectedIndex = null;
+}
 
 function moveMole() {
-    clearInterval(timer)
-    const speed = getCurrentSpeed(currentTime, currentDifficulty)
-    timer = setInterval(randomSquare, speed)
+  log('moveMole called');
+  try {
+    if (timer) clearInterval(timer);
+    const speed = getCurrentSpeed(currentTime, currentDifficulty);
+    log(`Setting mole timer with speed: ${speed}`);
+    timer = setInterval(randomSquare, speed);
+  } catch (error) {
+    log(`Error in moveMole: ${error.message}`);
+  }
 }
 
 function countDown() {
-    currentTime--
-    timeLeft.textContent = currentTime
-    // Check if speed should change (based on difficulty settings)
-    if (shouldChangeSpeed(currentTime, currentDifficulty)) {
-        moveMole() // Update to faster speed
-    }
-    if(currentTime == 0) {
-        clearInterval(countDownTimer)
-        clearInterval(timer)
-        final.textContent = `Your final score is : ${result}`
-        document.querySelector('.stats').style.display = 'flex'
-        isGameRunning = false
-        startButton.disabled = true
-        pauseButton.disabled = true
-        restartButton.disabled = false
-         // Remove any remaining moles
-        squares.forEach(square => square.classList.remove('mole'))
-    }
+  currentTime--;
+  if (timeLeft) timeLeft.textContent = currentTime;
+  // Check if speed should change (based on difficulty settings)
+  if (shouldChangeSpeed(currentTime, currentDifficulty)) {
+    moveMole(); // Update to faster speed
+  }
+  if (currentTime == 0) {
+    clearInterval(countDownTimer);
+    clearInterval(timer);
+    if (final) final.textContent = `Your final score is : ${result}`;
+    const stats = document.querySelector('.stats');
+    if (stats) stats.style.display = 'flex';
+    isGameRunning = false;
+    if (startButton) startButton.disabled = true;
+    if (pauseButton) pauseButton.disabled = true;
+    if (restartButton) restartButton.disabled = false;
+    // Remove any remaining moles
+    if (squares) squares.forEach(square => square.classList.remove('mole'));
+    checkHighScore(); // Check for high score when game ends
+  }
 }
 
 const storageKey = 'theme-preference';
@@ -341,27 +380,94 @@ difficultyButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         // Only allow difficulty change when game is not running
         if (!isGameRunning) {
-            // Update active button styling
-            difficultyButtons.forEach(b => b.classList.remove('active'))
-            btn.classList.add('active')
+          // Update active button styling
+          difficultyButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
 
-            // Set new difficulty
-            currentDifficulty = btn.dataset.level
-            currentDifficultyDisplay.textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1)
+          // Set new difficulty
+          currentDifficulty = btn.dataset.level;
+          if (currentDifficultyDisplay)
+            currentDifficultyDisplay.textContent =
+              currentDifficulty.charAt(0).toUpperCase() +
+              currentDifficulty.slice(1);
 
-            // Reset game with new difficulty settings
-            resetGame()
-            updateHighScoreDisplay()
+          // Reset game with new difficulty settings
+          resetGame();
+          updateHighScoreDisplay();
         }
-    })
-})
-// Event listeners
-startButton.addEventListener('click', startGame)
-pauseButton.addEventListener('click', pauseGame)
-restartButton.addEventListener('click', resetGame)
-resetHighScoreButton.addEventListener('click', resetHighScore)
+      });
+    });
+  }
 
-// Initialize
-resetMolePosition()
-resetGame()
-updateHighScoreDisplay()
+  // Keyboard event listener
+  document.addEventListener('keydown', e => {
+    // Ignore inputs
+    const tag = document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    // Number keys 1-9 → hit square
+    if (/^[1-9]$/.test(e.key)) {
+      const idx = parseInt(e.key, 10) - 1;
+      setSelection(idx);
+      hitSquare(idx);
+      e.preventDefault();
+      return;
+    }
+
+    // Arrow key navigation
+    const COLS = 3;
+    if (selectedIndex === null) setSelection(4); // default center
+    let row = Math.floor(selectedIndex / COLS);
+    let col = selectedIndex % COLS;
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        col = Math.max(0, col - 1);
+        setSelection(row * COLS + col);
+        e.preventDefault();
+        break;
+      case 'ArrowRight':
+        col = Math.min(COLS - 1, col + 1);
+        setSelection(row * COLS + col);
+        e.preventDefault();
+        break;
+      case 'ArrowUp':
+        row = Math.max(0, row - 1);
+        setSelection(row * COLS + col);
+        e.preventDefault();
+        break;
+      case 'ArrowDown':
+        row = Math.min(2, row + 1);
+        setSelection(row * COLS + col);
+        e.preventDefault();
+        break;
+      case 'Enter':
+      case ' ':
+        hitSquare(selectedIndex);
+        e.preventDefault();
+        break;
+    }
+  });
+
+  // Event listeners for buttons
+  if (startButton) startButton.addEventListener('click', startGame);
+  if (pauseButton) pauseButton.addEventListener('click', pauseGame);
+  if (restartButton) restartButton.addEventListener('click', resetGame);
+  if (resetHighScoreButton)
+    resetHighScoreButton.addEventListener('click', resetHighScore);
+}
+
+export function initializeGame() {
+  initializeElements();
+  initializeAudio();
+  resetMolePosition();
+  resetGame();
+  updateHighScoreDisplay();
+  addEventListeners();
+  addSquareListeners();
+}
+
+// Initialize the game when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  initializeGame();
+});

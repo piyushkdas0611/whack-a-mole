@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+coverage
+.next
+.vercel
+*.min.js
+package-lock.json
+yarn.lock
+.git
