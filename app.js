@@ -396,7 +396,7 @@ function setupSquareListeners() {
 
 // Difficulty Handler
 function setDifficulty(difficulty) {
-    log('setDifficulty called with: ${difficulty}');
+    log(`setDifficulty called with: ${difficulty}`);
     try {
         currentDifficulty = difficulty;
         localStorage.setItem('whackAMoleCurrentDifficulty', difficulty);
