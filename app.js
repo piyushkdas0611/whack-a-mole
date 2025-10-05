@@ -22,11 +22,13 @@ function log(message) {
     logBuffer += message + '\n';
 }
 function saveLogFile() {
-    const blob = new Blob([logBuffer], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'whackamole_log.txt';
-    a.click();
+    if (window.confirm('Do you want to download the log file? This may contain sensitive debugging information.')) {
+        const blob = new Blob([logBuffer], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'whackamole_log.txt';
+        a.click();
+    }
 }
 
 // DOM elements
