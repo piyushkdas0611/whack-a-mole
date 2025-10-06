@@ -221,7 +221,9 @@ function randomSquare() {
       return;
     }
     squares.forEach(square => {
-      square.classList.remove('mole');
+      // --- MODIFIED LINE ---
+      // Remove 'mole' and 'whacked' classes to clean up previous state
+      square.classList.remove('mole', 'whacked');
     });
 
     // Clear selection on reset
@@ -257,6 +259,12 @@ function hitSquare(index) {
         console.log('Audio play prevented:', err);
       });
     }
+
+    // --- START OF NEW CODE ---
+    // Add the 'whacked' class to trigger the CSS animation
+    square.classList.add('whacked');
+    // The 'mole' class will be removed by the next randomSquare() call
+    // --- END OF NEW CODE ---
   }
 }
 
