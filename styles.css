@@ -9,7 +9,7 @@
   --highscore-text: #6c757d;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --bg-color: #1a1a1a;
   --text-color: #f0f0f0;
   --square-bg: #2d2d2d;
@@ -66,13 +66,13 @@ body {
   margin-right: 0.625rem;
 }
 
-[data-theme="light"] .dark-icon,
-[data-theme="dark"] .light-icon {
+[data-theme='light'] .dark-icon,
+[data-theme='dark'] .light-icon {
   display: none;
 }
 
-[data-theme="light"] .light-icon,
-[data-theme="dark"] .dark-icon {
+[data-theme='light'] .light-icon,
+[data-theme='dark'] .dark-icon {
   display: block;
 }
 
@@ -231,12 +231,12 @@ body {
   animation: moleDisappear 0.2s ease-in forwards;
 }
 
-[data-theme="dark"] .mole {
+[data-theme='dark'] .mole {
   background-color: var(--square-bg);
   background-image: url('./images/whack-a-mole-white.png');
 }
 
-[data-theme="light"] .mole {
+[data-theme='light'] .mole {
   background-color: white;
   background-image: url('./images/whack-a-mole-black.png');
 }
@@ -331,7 +331,7 @@ body {
 }
 
 /* Dark mode styles */
-[data-theme="dark"] .theme-toggle {
+[data-theme='dark'] .theme-toggle {
   --toggle-color: #ffffff;
   /* White for dark mode */
   --toggle-color-hover: #d1d5db;
@@ -340,7 +340,7 @@ body {
   /* Gray-600 */
 }
 
-[data-theme="dark"] .theme-toggle:hover {
+[data-theme='dark'] .theme-toggle:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -391,12 +391,12 @@ body {
   user-select: none;
 }
 
-[data-theme="light"] .sun {
+[data-theme='light'] .sun {
   fill: #000000;
   /* Black sun in light mode */
 }
 
-[data-theme="dark"] .moon {
+[data-theme='dark'] .moon {
   fill: #ffffff;
   /* White moon in dark mode */
 }
@@ -416,7 +416,7 @@ body {
 }
 
 /* For Chrome/Safari */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
   .theme-toggle {
     -webkit-tap-highlight-color: transparent !important;
   }
@@ -439,23 +439,23 @@ body {
 }
 
 /* Sun beams in light mode */
-[data-theme="light"] .sun-beams {
+[data-theme='light'] .sun-beams {
   stroke: #000000;
   /* Black sun beams */
 }
 
 /* Moon in light mode (hidden) */
-[data-theme="light"] .moon {
+[data-theme='light'] .moon {
   fill: transparent;
 }
 
 /* Sun in dark mode (hidden) */
-[data-theme="dark"] .sun {
+[data-theme='dark'] .sun {
   fill: transparent;
 }
 
 /* Sun beams in dark mode (hidden) */
-[data-theme="dark"] .sun-beams {
+[data-theme='dark'] .sun-beams {
   opacity: 0;
 }
 
@@ -474,7 +474,7 @@ body {
   transition: transform 0.5s var(--ease-spring-3);
 }
 
-[data-theme="dark"] .sun {
+[data-theme='dark'] .sun {
   transform: scale(1.5);
   fill: #9ca3af;
   /* Gray-400 */
@@ -486,10 +486,12 @@ body {
   stroke-linecap: round;
   transform-origin: center center;
   opacity: 1;
-  transition: transform 0.5s var(--ease-spring-4), opacity 0.2s var(--ease-3);
+  transition:
+    transform 0.5s var(--ease-spring-4),
+    opacity 0.2s var(--ease-3);
 }
 
-[data-theme="dark"] .sun-beams {
+[data-theme='dark'] .sun-beams {
   transform: rotateZ(-25deg);
   opacity: 0;
 }
@@ -500,11 +502,11 @@ body {
   transition: transform 0.25s var(--ease-out-5);
 }
 
-[data-theme="dark"] .moon {
+[data-theme='dark'] .moon {
   transform: translateX(-7px);
 }
 
-[data-theme="dark"] .moon>circle {
+[data-theme='dark'] .moon > circle {
   transform: translateX(-7px);
 }
 
@@ -530,7 +532,7 @@ button:not(.theme-toggle) {
   cursor: pointer;
   border-radius: 0.313rem;
   border: none;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   transition: all 0.3s;
 }
@@ -742,7 +744,7 @@ button:disabled {
   font-weight: 500;
 }
 
-[data-theme="dark"] .stat-item span {
+[data-theme='dark'] .stat-item span {
   color: var(--score-color);
   font-weight: bold;
 }
@@ -755,4 +757,48 @@ button:disabled {
 
 #final-score {
   padding-bottom: 0;
+}
+
+/* --- NEW: Mole Animations --- */
+
+/* Keyframes for the mole appearing */
+@keyframes mole-pop {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Keyframes for the mole being successfully hit */
+@keyframes mole-whack {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.8) rotate(10deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* Apply the pop-up animation when the .mole class is added */
+.mole {
+  /* This ensures the animation originates from the bottom center */
+  transform-origin: bottom center;
+  animation: mole-pop 0.2s ease-out;
+}
+
+/* This class will be added via JavaScript when a mole is hit */
+.mole.whacked {
+  animation: mole-whack 0.3s ease-out;
+}
+
+/* Make sure your square can contain the animation properly */
+.square {
+  overflow: hidden;
 }
