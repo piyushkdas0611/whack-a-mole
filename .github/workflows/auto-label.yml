@@ -1,4 +1,4 @@
-name: "Auto Create & Assign Labels"
+name: "Auto Assign Hacktoberfest Label"
 
 on:
   issues:
@@ -13,58 +13,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up labels
-        uses: octokit/request-action@v2
-        id: create-labels
-        with:
-          route: POST /repos/${{ github.repository }}/labels
-          mediaType: '{"previews":["symmetra"]}'
-
-      - name: Create labels if missing and assign
+      - name: Create Hacktoberfest label if missing and assign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Define labels and colors
-          declare -A labels
-          labels["Level 1 / Beginner"]="#7AE7FF"
-          labels["Level 2 / Intermediate"]="#FFAB70"
-          labels["Level 3 / Advanced"]="#FF7F7F"
-          labels["Hacktoberfest"]="#0DAB76"
+          LABEL_NAME="Hacktoberfest"
+          LABEL_COLOR="#0DAB76"  # Green
 
-          # Create labels if they don't exist
-          for label in "${!labels[@]}"; do
-            response=$(curl -s -o /dev/null -w "%{http_code}" \
-              -X POST \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              https://api.github.com/repos/${GITHUB_REPOSITORY}/labels \
-              -d "{\"name\":\"$label\",\"color\":\"${labels[$label]}\"}")
-            if [[ "$response" == "422" ]]; then
-              echo "Label '$label' already exists, skipping."
-            else
-              echo "Label '$label' created."
-            fi
-          done
+          # Create label if it doesn't exist
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/labels \
+            -d "{\"name\":\"$LABEL_NAME\",\"color\":\"$LABEL_COLOR\"}")
 
-          # Determine complexity based on title/body
-          TITLE="${{ github.event.issue.title || github.event.pull_request.title }}"
-          BODY="${{ github.event.issue.body || github.event.pull_request.body }}"
-
-          LEVEL_LABEL=""
-          if echo "$TITLE$BODY" | grep -iqE "typo|doc|readme|ui"; then
-            LEVEL_LABEL="Level 1 / Beginner"
-          elif echo "$TITLE$BODY" | grep -iqE "feature|bug|small"; then
-            LEVEL_LABEL="Level 2 / Intermediate"
+          if [[ "$response" == "422" ]]; then
+            echo "Label '$LABEL_NAME' already exists, skipping."
           else
-            LEVEL_LABEL="Level 3 / Advanced"
+            echo "Label '$LABEL_NAME' created."
           fi
 
-          # Assign labels to issue or PR
+          # Assign Hacktoberfest label to issue or PR
           ISSUE_NUMBER="${{ github.event.issue.number || github.event.pull_request.number }}"
           curl -s -X POST \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$ISSUE_NUMBER/labels \
-            -d "{\"labels\":[\"Hacktoberfest\",\"$LEVEL_LABEL\"]}"
-          
-          echo "Labels assigned: Hacktoberfest, $LEVEL_LABEL"
+            -d "{\"labels\":[\"$LABEL_NAME\"]}"
+
+          echo "Label assigned: $LABEL_NAME"
