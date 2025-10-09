@@ -1,70 +1,148 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self';"
+    />
     <title>Whack A Mole</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="game-container">
-        <div class="left-panel">
-            <div class="header">
-                <img src="./images/whack-a-mole.png" alt="" class="icon">
-                <h1>Whack A Mole</h1>
-            </div>
-            
-            <div class="high-score-display">
-                <div class="label">🏆 High Score 🏆</div>
-                <span id="high-score">0</span>
-            </div>
-            
-            <div class="difficulty-selector">
-                <label><b>Select Difficulty:</b></label>
-                <button class="difficulty-btn active" data-level="easy">Easy</button>
-                <button class="difficulty-btn" data-level="medium">Medium</button>
-                <button class="difficulty-btn" data-level="hard">Hard</button>
-            </div>
-            
-            <div class="stats">
-                <div class="stat-item">
-                    <b>Score</b>
-                    <span id="score">0</span>
-                </div>
-                <div class="stat-item">
-                    <b>Time</b>
-                    <span id="time-left">30</span>
-                </div>
-            </div>
-            
-            <div class="controls">
-                <button id="start-button">Start Game</button>
-                <button id="pause-button" disabled>Pause</button>
-                <button id="restart-button" disabled>Restart</button>
-                <button id="reset-highscore-button">Reset High Score</button>
-            </div>
-            
-            <h2 id="final-score"></h2>
-            <div id="high-score-message" class="high-score-message"></div>
-        </div>
-
-        <div class="right-panel">
-            <div class="grid">
-                <div class="square" id="1" role="button" tabindex="0" data-index="0" aria-label="Hole 1"></div>
-                <div class="square" id="2" role="button" tabindex="0" data-index="1" aria-label="Hole 2"></div>
-                <div class="square" id="3" role="button" tabindex="0" data-index="2" aria-label="Hole 3"></div>
-                <div class="square" id="4" role="button" tabindex="0" data-index="3" aria-label="Hole 4"></div>
-                <div class="square" id="5" role="button" tabindex="0" data-index="4" aria-label="Hole 5"></div>
-                <div class="square" id="6" role="button" tabindex="0" data-index="5" aria-label="Hole 6"></div>
-                <div class="square" id="7" role="button" tabindex="0" data-index="6" aria-label="Hole 7"></div>
-                <div class="square" id="8" role="button" tabindex="0" data-index="7" aria-label="Hole 8"></div>
-                <div class="square" id="9" role="button" tabindex="0" data-index="8" aria-label="Hole 9"></div>
-            </div>
-        </div>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="header">
+        <img src="./images/whack-a-mole-black.png" alt="" class="icon light-icon">
+        <img src="./images/whack-a-mole-white.png" alt="" class="icon dark-icon">
+        <h1>Whack A Mole</h1>
+        <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite" style="-webkit-tap-highlight-color: transparent !important; tap-highlight-color: transparent !important; outline: none !important; -webkit-appearance: none !important; appearance: none !important; background: transparent !important; border: 1px solid #e5e7eb !important; color: inherit !important; -webkit-user-select: none !important; -moz-user-select: none !important; -ms-user-select: none !important; user-select: none !important;">
+            <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+                <mask class="moon" id="moon-mask">
+                    <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                    <circle cx="24" cy="10" r="6" fill="black" />
+                </mask>
+                <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
+                <g class="sun-beams" stroke="currentColor">
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </g>
+            </svg>
+        </button>
+    </div>
+    <div class="high-score-display">
+      <div class="label">🏆 High Score 🏆</div>
+      <span id="high-score">0</span>
+    </div>
+    <div class="difficulty-selector">
+      <label><b>Select Difficulty:</b></label>
+      <button class="difficulty-btn" data-level="easy">Easy</button>
+      <button class="difficulty-btn" data-level="medium">Medium</button>
+      <button class="difficulty-btn" data-level="hard">Hard</button>
+      <span id="current-difficulty" style="display: none"></span>
+    </div>
+    <div class="stats">
+      <div class="stat-item">
+        <b>Score</b>
+        <span id="score">0</span>
+      </div>
+      <div class="stat-item">
+        <b>Time</b>
+        <span id="time-left"></span>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="start-button">Start Game</button>
+      <button id="pause-button" disabled>Pause</button>
+      <button id="restart-button" disabled>Restart</button>
+      <button id="reset-highscore-button">Reset High Score</button>
+    </div>
+    <h2 id="final-score"></h2>
+    <div id="high-score-message" class="high-score-message"></div>
+    <div class="grid">
+      <div
+        class="square"
+        id="1"
+        role="button"
+        tabindex="0"
+        data-index="0"
+        aria-label="Hole 1"
+      ></div>
+      <div
+        class="square"
+        id="2"
+        role="button"
+        tabindex="0"
+        data-index="1"
+        aria-label="Hole 2"
+      ></div>
+      <div
+        class="square"
+        id="3"
+        role="button"
+        tabindex="0"
+        data-index="2"
+        aria-label="Hole 3"
+      ></div>
+      <div
+        class="square"
+        id="4"
+        role="button"
+        tabindex="0"
+        data-index="3"
+        aria-label="Hole 4"
+      ></div>
+      <div
+        class="square"
+        id="5"
+        role="button"
+        tabindex="0"
+        data-index="4"
+        aria-label="Hole 5"
+      ></div>
+      <div
+        class="square"
+        id="6"
+        role="button"
+        tabindex="0"
+        data-index="5"
+        aria-label="Hole 6"
+      ></div>
+      <div
+        class="square"
+        id="7"
+        role="button"
+        tabindex="0"
+        data-index="6"
+        aria-label="Hole 7"
+      ></div>
+      <div
+        class="square"
+        id="8"
+        role="button"
+        tabindex="0"
+        data-index="7"
+        aria-label="Hole 8"
+      ></div>
+      <div
+        class="square"
+        id="9"
+        role="button"
+        tabindex="0"
+        data-index="8"
+        aria-label="Hole 9"
+      ></div>
     </div>
 
+    <!-- Screen reader announcer -->
     <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
+
     <script type="module" src="./app.js"></script>
-</body>
+  </body>
 </html>

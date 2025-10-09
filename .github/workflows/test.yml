@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18, 20]   # Test on multiple Node.js versions
+        node-version: [18, 20] # Test on multiple Node.js versions
 
     steps:
       - name: 📥 Checkout Repository
@@ -26,10 +26,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'   # Speeds up builds by caching dependencies
+          cache: 'npm' # Speeds up builds by caching dependencies
 
       - name: 📦 Install Dependencies
-        run: npm ci   # Clean install (faster & consistent)
+        run: npm ci # Clean install (faster & consistent)
 
       - name: 🧪 Run Unit Tests
         run: npm test -- --verbose
