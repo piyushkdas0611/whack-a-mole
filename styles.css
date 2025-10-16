@@ -54,10 +54,15 @@ body {
 }
 
 .header h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #2c3e50;
-  letter-spacing: -0.5px;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    letter-spacing: -0.5px;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px var(--shadow);
 }
 
 .header .icon {
@@ -94,28 +99,29 @@ body {
 }
 
 .difficulty-btn {
-  margin: 0 0.25rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid #e0e0e0;
-  background: white;
-  color: #6c757d;
-  border-radius: 0.25rem;
-  transition: all 0.2s ease;
+    margin: 0 0.25rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    background: #FFFFFF;
+    color: var(--text);
+    border-radius: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .difficulty-btn.active {
-  background: #2c3e50;
-  color: white;
-  border-color: #2c3e50;
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 }
 
-.difficulty-btn:hover:not(.active) {
-  background: #f8f9fa;
-  border-color: #2c3e50;
-  color: #2c3e50;
+.difficulty-btn:hover:not(.active):not(:disabled) {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 .difficulty-btn:disabled {
@@ -155,13 +161,14 @@ body {
 }
 
 .square {
-  aspect-ratio: 1;
-  width: 100%;
-  border: 1px solid #e0e0e0;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  background: #fafafa;
+    aspect-ratio: 1;
+    width: 100%;
+    border: 2px solid var(--border);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #FFFFFF;
+    box-shadow: inset 0 2px 4px var(--shadow);
 }
 
 .square:active {
@@ -170,48 +177,9 @@ body {
 }
 
 .square:hover {
-  border-color: #2c3e50;
-  background: #f5f5f5;
-}
-
-/* Mole appearance animation */
-@keyframes moleAppear {
-  0% {
-    transform: translateY(100%) scale(0.9);
-    opacity: 0.7;
-  }
-
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes moleDisappear {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(100%) scale(0.8);
-    opacity: 0;
-  }
-}
-
-@keyframes moleHit {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(0.9);
-    filter: brightness(1.5);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
 .mole {
@@ -714,11 +682,11 @@ button:disabled {
 }
 
 .high-score-display {
-  padding: 1rem 2rem;
-  min-width: 180px;
-  background: white;
-  border-radius: 0.5rem;
-  border: 1px solid #e0e0e0;
+    padding: 1rem 2rem;
+    min-width: 180px;
+    background: linear-gradient(145deg, #FFFFFF, #F8FAFF);
+    border: 2px solid var(--border);
+    box-shadow: 0 4px 15px var(--shadow);
 }
 
 .high-score-display #high-score {
@@ -750,9 +718,23 @@ button:disabled {
 }
 
 .stat-item span {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #2c3e50;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+    animation: scorePopup 0.3s ease;
+}
+
+/* Add animation for score changes */
+@keyframes scorePopup {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 #final-score {
@@ -801,4 +783,15 @@ button:disabled {
 /* Make sure your square can contain the animation properly */
 .square {
   overflow: hidden;
+}
+
+@keyframes messagePopup {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
