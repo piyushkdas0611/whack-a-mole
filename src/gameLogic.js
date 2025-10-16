@@ -129,16 +129,16 @@ export function spawnMultipleMoles(maxSquares, difficulty = 'easy') {
   const moleCount = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 2 : 3;
   const positions = [];
   const usedPositions = new Set();
-  
+
   for (let i = 0; i < moleCount && positions.length < maxSquares; i++) {
     let position;
     do {
       position = Math.floor(Math.random() * maxSquares);
     } while (usedPositions.has(position));
-    
+
     usedPositions.add(position);
     positions.push(position);
   }
-  
+
   return positions;
 }

@@ -842,6 +842,7 @@ button:disabled {
     transform: translateY(100%) scale(0.9);
     opacity: 0.7;
   }
+
   100% {
     transform: translateY(0) scale(1);
     opacity: 1;
@@ -854,6 +855,7 @@ button:disabled {
     transform: translateY(0) scale(1);
     opacity: 1;
   }
+
   100% {
     transform: translateY(100%) scale(0.8);
     opacity: 0;
@@ -865,10 +867,12 @@ button:disabled {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(0.9);
     filter: brightness(1.5);
   }
+
   100% {
     transform: scale(1);
   }
