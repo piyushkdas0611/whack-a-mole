@@ -1,4 +1,3 @@
-'use client';
 // Import game logic functions
 import {
   difficultySettings,
@@ -10,7 +9,9 @@ import {
   shouldChangeSpeed,
 } from './src/gameLogic.js';
 
-// Audio for hitting mole
+// ======================
+// 🎮 GLOBAL VARIABLES
+// ======================
 let squares,
   mole,
   timeLeft,
@@ -43,8 +44,18 @@ function initializeElements() {
   srAnnouncer = document.querySelector('#sr-announcer');
 }
 
+// ======================
+// 🔊 AUDIO
+// ======================
 let hitSound;
 
+function initializeAudio() {
+  hitSound = new Audio('audio/whack01.mp3');
+}
+
+// ======================
+// 🧠 GAME STATE
+// ======================
 let result = 0;
 let hit = 0;
 let currentTime = 30;
@@ -55,25 +66,14 @@ let isGameRunning = false;
 let currentDifficulty = 'easy';
 let selectedIndex = null; // For keyboard selection
 
-// Add log function for debugging
-function log(message) {
-  console.log(message);
-}
+// Multiplayer mode state
+let multiplayer = false;
+let currentPlayer = 1;
+let scores = { 1: 0, 2: 0 };
 
-function initializeAudio() {
-  try {
-    hitSound = new Audio('audio/whack01.mp3');
-    hitSound.addEventListener('error', () => {
-      console.warn('Audio file not found, game will work without sound');
-      hitSound = null;
-    });
-  } catch (error) {
-    console.warn('Audio initialization failed, game will work without sound');
-    hitSound = null;
-  }
-}
-
-// HIGH SCORE- from local storage
+// ======================
+// 💾 HIGH SCORE LOGIC
+// ======================
 function getHighScore() {
   return (
     parseInt(
@@ -88,196 +88,151 @@ function setHighScore(scoreValue) {
 }
 
 function updateHighScoreDisplay() {
-  log('updateHighScoreDisplay called');
   try {
     if (highScore) {
       const hs = getHighScore(currentDifficulty);
       highScore.textContent = hs;
-      log(`High score displayed: ${hs}`);
-    } else {
-      log('Error: highScore element not found');
     }
   } catch (error) {
-    log(`Error in updateHighScoreDisplay: ${error.message}`);
+    console.error('Error updating high score:', error);
   }
 }
 
 function checkHighScore() {
-  log('checkHighScore called');
   try {
     const currentHigh = getHighScore();
     if (result > currentHigh) {
-      log(`New High Score! Old: ${currentHigh}, New: ${result}`);
       setHighScore(result);
       if (highScoreMessage) {
         highScoreMessage.textContent = '🎉 New High Score! 🎉';
         highScoreMessage.style.display = 'block';
         setTimeout(() => (highScoreMessage.style.display = 'none'), 3000);
       }
-    } else {
-      log(
-        `No new high score. Current score: ${result}, High Score: ${currentHigh}`
-      );
     }
   } catch (error) {
-    log(`Error in checkHighScore: ${error.message}`);
+    console.error('Error checking high score:', error);
   }
 }
 
 function resetHighScore() {
-  log('resetHighScore called');
-  try {
-    if (confirm(`Reset ${currentDifficulty.toUpperCase()} High Score?`)) {
-      log(`Resetting high score for ${currentDifficulty}`);
-      setHighScore(0);
-      if (highScoreMessage) {
-        highScoreMessage.textContent = 'High Score Reset!';
-        highScoreMessage.style.display = 'block';
-        setTimeout(() => (highScoreMessage.style.display = 'none'), 2000);
-      }
+  if (confirm(`Reset ${currentDifficulty.toUpperCase()} High Score?`)) {
+    setHighScore(0);
+    if (highScoreMessage) {
+      highScoreMessage.textContent = 'High Score Reset!';
+      highScoreMessage.style.display = 'block';
+      setTimeout(() => (highScoreMessage.style.display = 'none'), 2000);
     }
-  } catch (error) {
-    log(`Error in resetHighScore: ${error.message}`);
   }
 }
 
+// ======================
+// ⏱️ GAME LOGIC
+// ======================
 function updateTimerUI() {
   if (timeLeft) timeLeft.textContent = currentTime;
 }
 
-// Game Functions
 function resetGame(keepTime = false) {
-  log('resetGame called');
-  try {
-    if (timer) clearInterval(timer);
-    if (countDownTimer) clearInterval(countDownTimer);
-    result = 0;
-    if (score) score.textContent = result;
-    if (final) final.textContent = '';
-    if (squares) squares.forEach(s => s.classList.remove('mole'));
-    resetMolePosition();
-    isGamePaused = false;
-    isGameRunning = false;
-    if (startButton) startButton.disabled = false;
-    if (pauseButton) {
-      pauseButton.disabled = true;
-      pauseButton.textContent = 'Pause';
-    }
-    if (restartButton) restartButton.disabled = true;
-    if (!keepTime) {
-      currentTime = getInitialTime(currentDifficulty);
-      log(`getInitialTime in resetGame returned: ${currentTime}`);
-    }
-    updateTimerUI();
-    updateHighScoreDisplay();
-    log(`Game reset. Difficulty: ${currentDifficulty}, time: ${currentTime}`);
-  } catch (error) {
-    log(`Error in resetGame: ${error.message}`);
+  if (timer) clearInterval(timer);
+  if (countDownTimer) clearInterval(countDownTimer);
+  result = 0;
+  if (score) score.textContent = result;
+  if (final) final.textContent = '';
+  if (squares) squares.forEach(s => s.classList.remove('mole'));
+  resetMolePosition();
+  isGamePaused = false;
+  isGameRunning = false;
+  if (startButton) startButton.disabled = false;
+  if (pauseButton) {
+    pauseButton.disabled = true;
+    pauseButton.textContent = 'Pause';
   }
+  if (restartButton) restartButton.disabled = true;
+  if (!keepTime) currentTime = getInitialTime(currentDifficulty);
+  updateTimerUI();
+  updateHighScoreDisplay();
+
+  // Reset multiplayer scores
+  scores = { 1: 0, 2: 0 };
+  const p1 = document.getElementById('score-player1');
+  const p2 = document.getElementById('score-player2');
+  if (p1) p1.textContent = 0;
+  if (p2) p2.textContent = 0;
 }
 
 function startGame() {
-  log('startGame called');
-  try {
-    if (isGameRunning) {
-      log('Game already running, ignoring startGame');
-      return;
-    }
-    resetGame(true);
-    isGameRunning = true;
-    if (startButton) startButton.disabled = true;
-    if (pauseButton) pauseButton.disabled = false;
-    if (restartButton) restartButton.disabled = false;
-    log('Starting moveMole');
-    moveMole();
-    log('Starting countDown timer');
-    countDownTimer = setInterval(countDown, 1000);
-    log('Game started successfully');
-  } catch (error) {
-    log(`Error in startGame: ${error.message}`);
-    console.error('Game start failed:', error);
-  }
+  if (isGameRunning) return;
+  resetGame(true);
+  isGameRunning = true;
+  if (startButton) startButton.disabled = true;
+  if (pauseButton) pauseButton.disabled = false;
+  if (restartButton) restartButton.disabled = false;
+  moveMole();
+  countDownTimer = setInterval(countDown, 1000);
 }
 
 function pauseGame() {
-  log('pauseGame called');
-  try {
-    if (!isGameRunning) {
-      log('Game not running, ignoring pauseGame');
-      return;
-    }
-    if (!isGamePaused) {
-      clearInterval(timer);
-      clearInterval(countDownTimer);
-      if (pauseButton) pauseButton.textContent = 'Resume';
-      isGamePaused = true;
-      log('Game paused');
-    } else {
-      moveMole();
-      countDownTimer = setInterval(countDown, 1000);
-      if (pauseButton) pauseButton.textContent = 'Pause';
-      isGamePaused = false;
-      log('Game resumed');
-    }
-  } catch (error) {
-    log(`Error in pauseGame: ${error.message}`);
+  if (!isGameRunning) return;
+  if (!isGamePaused) {
+    clearInterval(timer);
+    clearInterval(countDownTimer);
+    if (pauseButton) pauseButton.textContent = 'Resume';
+    isGamePaused = true;
+  } else {
+    moveMole();
+    countDownTimer = setInterval(countDown, 1000);
+    if (pauseButton) pauseButton.textContent = 'Pause';
+    isGamePaused = false;
   }
 }
 
 function randomSquare() {
-  log('randomSquare called');
-  try {
-    if (!squares || squares.length === 0) {
-      log('Error: squares not initialized');
-      return;
-    }
-    squares.forEach(square => {
-      square.classList.remove('mole');
-    });
+  squares.forEach(square => square.classList.remove('mole', 'whacked'));
+  squares.forEach(square => square.classList.remove('selected'));
+  hit = null;
+  selectedIndex = null;
 
-    // Clear selection on reset
-    squares.forEach(square => square.classList.remove('selected'));
-    hit = null;
-    selectedIndex = null;
-
-    const randomIndex = spawnMole(9, true); // 9 squares, avoid repeats
-    const randomSquare = squares[randomIndex];
-    randomSquare.classList.add('mole');
-    hit = randomSquare.id;
-    log(`Mole spawned at position ${randomIndex}`);
-  } catch (error) {
-    log(`Error in randomSquare: ${error.message}`);
-    console.error('Random square error:', error);
-  }
+  const randomIndex = spawnMole(9, true);
+  const randomSquare = squares[randomIndex];
+  randomSquare.classList.add('mole');
+  hit = randomSquare.id;
 }
 
-// Central hit function for mouse & keyboard
+// ======================
+// 🧍 HIT DETECTION
+// ======================
 function hitSquare(index) {
   if (!isGameRunning || isGamePaused) return;
   const square = squares[index];
   if (!square) return;
-  if (square.id == hit) {
-    // Use enhanced scoring from gameLogic
-    result = increaseScore(result, currentDifficulty, currentTime);
-    if (score) score.textContent = result;
-    hit = null;
 
-    // Play hit sound if available
-    if (hitSound) {
-      try {
-        hitSound.currentTime = 0;
-        hitSound.play().catch(err => {
-          console.log('Audio play prevented:', err);
-        });
-      } catch (error) {
-        console.log('Audio error:', error);
-      }
+  if (square.id == hit) {
+    if (multiplayer) {
+      scores[currentPlayer] = increaseScore(
+        scores[currentPlayer],
+        currentDifficulty,
+        currentTime
+      );
+      document.getElementById(`score-player${currentPlayer}`).textContent =
+        scores[currentPlayer];
+      currentPlayer = currentPlayer === 1 ? 2 : 1; // Switch turn
+      srAnnouncer.textContent = `Player ${currentPlayer}'s turn`;
+    } else {
+      result = increaseScore(result, currentDifficulty, currentTime);
+      if (score) score.textContent = result;
     }
+
+    if (hitSound) {
+      hitSound.currentTime = 0;
+      hitSound.play().catch(err => console.log('Audio play prevented:', err));
+    }
+
+    square.classList.add('whacked');
+    hit = null;
   }
 }
 
 function addSquareListeners() {
-  if (!squares) return;
   squares.forEach((square, i) => {
     square.addEventListener('mousedown', () => {
       hitSquare(i);
@@ -286,7 +241,9 @@ function addSquareListeners() {
   });
 }
 
-// Selection highlight functions
+// ======================
+// ⌨️ KEYBOARD CONTROLS
+// ======================
 function setSelection(i) {
   if (selectedIndex !== null && squares[selectedIndex]) {
     squares[selectedIndex].classList.remove('selected');
@@ -300,171 +257,142 @@ function setSelection(i) {
   }
 }
 
-function clearSelection() {
-  if (selectedIndex !== null && squares[selectedIndex]) {
-    squares[selectedIndex].classList.remove('selected');
-  }
-  selectedIndex = null;
-}
-
+// ======================
+// 🕳️ MOLE MOVEMENT
+// ======================
 function moveMole() {
-  log('moveMole called');
-  try {
-    if (timer) clearInterval(timer);
-    const speed = getCurrentSpeed(currentTime, currentDifficulty);
-    log(`Setting mole timer with speed: ${speed}`);
-    timer = setInterval(randomSquare, speed);
-  } catch (error) {
-    log(`Error in moveMole: ${error.message}`);
-    console.error('Move mole error:', error);
-  }
+  if (timer) clearInterval(timer);
+  const speed = getCurrentSpeed(currentTime, currentDifficulty);
+  timer = setInterval(randomSquare, speed);
 }
 
+// ======================
+// ⏳ COUNTDOWN
+// ======================
 function countDown() {
   currentTime--;
-  if (timeLeft) timeLeft.textContent = currentTime;
-  // Check if speed should change (based on difficulty settings)
-  if (shouldChangeSpeed(currentTime, currentDifficulty)) {
-    moveMole(); // Update to faster speed
-  }
+  updateTimerUI();
+
+  if (shouldChangeSpeed(currentTime, currentDifficulty)) moveMole();
+
   if (currentTime == 0) {
     clearInterval(countDownTimer);
     clearInterval(timer);
-    if (final) final.textContent = `Your final score is : ${result}`;
-    const stats = document.querySelector('.stats');
-    if (stats) stats.style.display = 'flex';
     isGameRunning = false;
-    if (startButton) startButton.disabled = true;
     if (pauseButton) pauseButton.disabled = true;
     if (restartButton) restartButton.disabled = false;
-    // Remove any remaining moles
     if (squares) squares.forEach(square => square.classList.remove('mole'));
-    checkHighScore(); // Check for high score when game ends
+
+    if (final) {
+      if (multiplayer) {
+        const winner =
+          scores[1] === scores[2]
+            ? "It's a Tie!"
+            : scores[1] > scores[2]
+            ? '🏆 Player 1 Wins!'
+            : '🏆 Player 2 Wins!';
+        final.textContent = `P1: ${scores[1]} | P2: ${scores[2]} → ${winner}`;
+      } else {
+        final.textContent = `Your final score is: ${result}`;
+        checkHighScore();
+      }
+    }
   }
 }
 
+// ======================
+// 🌗 THEME TOGGLE
+// ======================
+const storageKey = 'theme-preference';
+const getColorPreference = () => {
+  if (localStorage.getItem(storageKey)) return localStorage.getItem(storageKey);
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
+};
+const setPreference = () => {
+  localStorage.setItem(storageKey, theme.value);
+  reflectPreference();
+};
+const reflectPreference = () => {
+  document.firstElementChild.setAttribute('data-theme', theme.value);
+  document
+    .querySelector('#theme-toggle')
+    ?.setAttribute('aria-label', theme.value);
+};
+const theme = { value: getColorPreference() };
+reflectPreference();
+window.onload = () => {
+  reflectPreference();
+  document.querySelector('#theme-toggle').addEventListener('click', () => {
+    theme.value = theme.value === 'light' ? 'dark' : 'light';
+    setPreference();
+  });
+};
+
+// ======================
+// 🎯 EVENT LISTENERS
+// ======================
 function addEventListeners() {
-  // Difficulty selection handler
-  if (difficultyButtons) {
-    difficultyButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Only allow difficulty change when game is not running
-        if (!isGameRunning) {
-          // Update active button styling
-          difficultyButtons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-
-          // Set new difficulty
-          currentDifficulty = btn.dataset.level;
-          if (currentDifficultyDisplay)
-            currentDifficultyDisplay.textContent =
-              currentDifficulty.charAt(0).toUpperCase() +
-              currentDifficulty.slice(1);
-
-          // Reset game with new difficulty settings
-          resetGame();
-          updateHighScoreDisplay();
-        }
-      });
+  difficultyButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!isGameRunning) {
+        difficultyButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentDifficulty = btn.dataset.level;
+        if (currentDifficultyDisplay)
+          currentDifficultyDisplay.textContent =
+            currentDifficulty.charAt(0).toUpperCase() +
+            currentDifficulty.slice(1);
+        resetGame();
+        updateHighScoreDisplay();
+      }
     });
-  }
+  });
 
-  // Keyboard event listener
+  // Keyboard input
   document.addEventListener('keydown', e => {
-    // Ignore inputs
-    const tag = document.activeElement.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-
-    // Number keys 1-9 → hit square
     if (/^[1-9]$/.test(e.key)) {
       const idx = parseInt(e.key, 10) - 1;
       setSelection(idx);
       hitSquare(idx);
       e.preventDefault();
-      return;
-    }
-
-    // Arrow key navigation
-    const COLS = 3;
-    if (selectedIndex === null) setSelection(4); // default center
-    let row = Math.floor(selectedIndex / COLS);
-    let col = selectedIndex % COLS;
-
-    switch (e.key) {
-      case 'ArrowLeft':
-        col = Math.max(0, col - 1);
-        setSelection(row * COLS + col);
-        e.preventDefault();
-        break;
-      case 'ArrowRight':
-        col = Math.min(COLS - 1, col + 1);
-        setSelection(row * COLS + col);
-        e.preventDefault();
-        break;
-      case 'ArrowUp':
-        row = Math.max(0, row - 1);
-        setSelection(row * COLS + col);
-        e.preventDefault();
-        break;
-      case 'ArrowDown':
-        row = Math.min(2, row + 1);
-        setSelection(row * COLS + col);
-        e.preventDefault();
-        break;
-      case 'Enter':
-      case ' ':
-        hitSquare(selectedIndex);
-        e.preventDefault();
-        break;
     }
   });
 
-  // Event listeners for buttons
+  // Buttons
   if (startButton) startButton.addEventListener('click', startGame);
   if (pauseButton) pauseButton.addEventListener('click', pauseGame);
   if (restartButton) restartButton.addEventListener('click', resetGame);
   if (resetHighScoreButton)
     resetHighScoreButton.addEventListener('click', resetHighScore);
-}
 
-export function initializeGame() {
-  try {
-    log('Initializing game...');
-    initializeElements();
-    initializeAudio();
-    resetMolePosition();
-    resetGame();
-    updateHighScoreDisplay();
-    addEventListeners();
-    addSquareListeners();
-    log('Game initialized successfully');
-  } catch (error) {
-    console.error('Game initialization failed:', error);
-    alert('Game failed to initialize. Please refresh the page.');
+  // Multiplayer toggle
+  const multiplayerToggle = document.getElementById('multiplayer-toggle');
+  if (multiplayerToggle) {
+    multiplayerToggle.addEventListener('click', () => {
+      multiplayer = !multiplayer;
+      scores = { 1: 0, 2: 0 };
+      document.getElementById('score-player1').textContent = 0;
+      document.getElementById('score-player2').textContent = 0;
+      alert(multiplayer ? '🎮 Multiplayer Mode On' : '🎯 Single Player Mode');
+    });
   }
 }
 
-// Initialize the game when the DOM is loaded
+// ======================
+// 🚀 INITIALIZATION
+// ======================
+export function initializeGame() {
+  initializeElements();
+  initializeAudio();
+  resetMolePosition();
+  resetGame();
+  updateHighScoreDisplay();
+  addEventListeners();
+  addSquareListeners();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  log('DOM Content Loaded');
   initializeGame();
 });
-
-// --- DARK/LIGHT MODE TOGGLE ---
-const themeToggle = document.getElementById('theme-toggle');
-const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-// Set initial theme
-if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark)) {
-    document.body.classList.add('dark');
-    if (themeToggle) themeToggle.textContent = '☀️';
-}
-
-if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
-        const isDark = document.body.classList.contains('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        themeToggle.textContent = isDark ? '☀️' : '🌙';
-    });
-}

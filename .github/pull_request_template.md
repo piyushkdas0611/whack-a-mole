@@ -1,6 +1,7 @@
 # 🛠️ Pull Request Template
 
 ## 🏷️ PR Type
+
 <!--
 Select the type of PR (check one):
 - [ ] 🐞 Bug Fix
@@ -12,15 +13,18 @@ Select the type of PR (check one):
 ---
 
 ## 🔗 Related Issue
+
 <!--
 Link the GitHub issue this PR closes (if applicable).
 Example: `Closes #123`
 -->
+
 - Closes #.
 
 ---
 
 ## 📝 Rationale / Motivation
+
 <!--
 Explain why this change is necessary.
 - What problem does it solve?
@@ -31,6 +35,7 @@ Explain why this change is necessary.
 ---
 
 ## ✨ Description of Changes
+
 <!--
 Summarize changes with details:
 - What files/components were modified
@@ -51,6 +56,7 @@ Summarize changes with details:
 ---
 
 ## 🧪 Testing Instructions
+
 <!--
 Step-by-step guide to test this PR:
 1. Setup or dependencies needed
@@ -68,6 +74,7 @@ Step-by-step guide to test this PR:
 ---
 
 ## 👀 Impact Assessment
+
 <!--
 Analyze the impact of this PR:
 - User-facing changes (UI / UX)
@@ -80,6 +87,7 @@ Analyze the impact of this PR:
 ---
 
 ## 🖼️ Screenshots / GIFs (if applicable)
+
 <!--
 Add screenshots or GIFs demonstrating user-facing changes
 -->
@@ -87,6 +95,7 @@ Add screenshots or GIFs demonstrating user-facing changes
 ---
 
 ## ⚡ Checklist
+
 - [ ] Code follows project’s coding style and guidelines
 - [ ] Changes are tested locally
 - [ ] Automated tests added/updated
@@ -99,6 +108,7 @@ Add screenshots or GIFs demonstrating user-facing changes
 ---
 
 ## 🔖 Reviewer Notes
+
 <!--
 Tips for reviewers to focus on critical areas:
 - Areas with complex logic
@@ -109,6 +119,7 @@ Tips for reviewers to focus on critical areas:
 ---
 
 ## ⚠️ Breaking Changes
+
 <!--
 Document any backward-incompatible changes:
 - Public APIs
@@ -119,6 +130,7 @@ Document any backward-incompatible changes:
 ---
 
 ## 🏆 Optional Enhancements / Future Work
+
 <!--
 Ideas or improvements that can be implemented later:
 - UI improvements
@@ -130,10 +142,12 @@ Ideas or improvements that can be implemented later:
 ---
 
 ## 🎯 Priority / Impact Level
+
 <!--
 Indicate the priority and expected impact:
 - Low / Medium / High
 - Helps maintainers understand urgency and importance
 -->
+
 - Priority: High
 - Impact: Medium
