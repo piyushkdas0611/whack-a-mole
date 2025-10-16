@@ -1,12 +1,17 @@
 :root {
-  --bg-color: #f0f0f0;
-  --text-color: #333;
-  --square-bg: white;
-  --square-border: black;
-  --stats-bg: white;
-  --stats-shadow: rgba(0, 0, 0, 0.2);
+  --bg-color: #f8f9fa;
+  --text-color: #2c3e50;
+  --square-bg: #ffffff;
+  --square-border: #e0e0e0;
+  --stats-bg: #ffffff;
+  --stats-shadow: rgba(0, 0, 0, 0.1);
   --highscore-bg: #f8f9fa;
   --highscore-text: #6c757d;
+  --primary: #4caf50;
+  --secondary: #2c3e50;
+  --accent: #6c757d;
+  --border: #e0e0e0;
+  --shadow: rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='dark'] {
@@ -19,7 +24,11 @@
   --highscore-bg: #333;
   --highscore-text: #f0f0f0;
   --score-color: #ffffff;
-  /* White color for score and time in dark mode */
+  --primary: #4caf50;
+  --secondary: #f0f0f0;
+  --accent: #888;
+  --border: #444;
+  --shadow: rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -36,11 +45,11 @@ body {
   justify-content: center;
   align-items: center;
   gap: 1.5rem;
-  background: #f8f9fa;
+  background: var(--bg-color);
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
     Cantarell, sans-serif;
-  color: #2c3e50;
+  color: var(--text-color);
   padding: 1rem;
 }
 
@@ -54,15 +63,10 @@ body {
 }
 
 .header h1 {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #2c3e50;
-    letter-spacing: -0.5px;
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 2px 2px 4px var(--shadow);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-color);
+  letter-spacing: -0.5px;
 }
 
 .header .icon {
@@ -99,29 +103,29 @@ body {
 }
 
 .difficulty-btn {
-    margin: 0 0.25rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    border: 2px solid var(--border);
-    background: #FFFFFF;
-    color: var(--text);
-    border-radius: 0.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0 0.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  background: var(--square-bg);
+  color: var(--text-color);
+  border-radius: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .difficulty-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }
 
 .difficulty-btn:hover:not(.active):not(:disabled) {
-    background: var(--accent);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--shadow);
+  background: var(--accent);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 .difficulty-btn:disabled {
@@ -129,15 +133,55 @@ body {
   cursor: not-allowed;
 }
 
+/* Multiplayer Controls */
+.multiplayer-controls {
+  text-align: center;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--stats-bg);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px var(--stats-shadow);
+}
+
+.player-scores {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.player-scores div {
+  color: var(--text-color);
+}
+
+#multiplayer-toggle {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#multiplayer-toggle:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
+}
+
 .stats {
   display: flex;
   flex-direction: row;
   gap: 3rem;
   font-size: 1rem;
-  background: white;
+  background: var(--stats-bg);
   padding: 1.5rem 2.5rem;
   border-radius: 0.5rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px var(--stats-shadow);
 }
 
 .grid {
@@ -149,10 +193,11 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
-  background: white;
+  background: var(--stats-bg);
   padding: 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px var(--stats-shadow);
 }
 
 .icon {
@@ -161,25 +206,33 @@ body {
 }
 
 .square {
-    aspect-ratio: 1;
-    width: 100%;
-    border: 2px solid var(--border);
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #FFFFFF;
-    box-shadow: inset 0 2px 4px var(--shadow);
+  aspect-ratio: 1;
+  width: 100%;
+  border: 2px solid var(--border);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--square-bg);
+  box-shadow: inset 0 2px 4px var(--shadow);
 }
 
 .square:active {
   transform: scale(0.95);
-  background: #f0f0f0;
+  background: var(--bg-color);
 }
 
 .square:hover {
-    transform: translateY(-2px);
-    border-color: var(--primary);
-    box-shadow: 0 4px 12px var(--shadow);
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.square.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+  outline: none;
 }
 
 .mole {
@@ -201,12 +254,12 @@ body {
 
 [data-theme='dark'] .mole {
   background-color: var(--square-bg);
-  background-image: url('./images/whack-a-mole-white.png');
+  background-image: url('/images/whack-a-mole-white.png');
 }
 
 [data-theme='light'] .mole {
-  background-color: white;
-  background-image: url('./images/whack-a-mole-black.png');
+  background-color: var(--square-bg);
+  background-image: url('/images/whack-a-mole-black.png');
 }
 
 /* Add some depth to the mole */
@@ -395,6 +448,7 @@ body {
   .theme-toggle {
     -moz-user-focus: ignore;
     -moz-user-select: none;
+    user-select: none;
   }
 }
 
@@ -474,7 +528,7 @@ body {
   transform: translateX(-7px);
 }
 
-[data-theme='dark'] .moon > circle {
+[data-theme='dark'] .moon>circle {
   transform: translateX(-7px);
 }
 
@@ -566,12 +620,12 @@ button:disabled {
   display: none;
   font-size: 1rem;
   font-weight: 500;
-  color: #2c3e50;
+  color: var(--text-color);
   text-align: center;
   margin: 0;
   padding: 0.75rem 1.5rem;
-  background-color: #f8f9fa;
-  border: 1px solid #e0e0e0;
+  background-color: var(--highscore-bg);
+  border: 1px solid var(--border);
   border-radius: 0.25rem;
   animation: fadeIn 0.3s ease;
 }
@@ -597,13 +651,13 @@ button:disabled {
 #final-score {
   font-size: 1.25rem;
   font-weight: 500;
-  color: #2c3e50;
+  color: var(--text-color);
   text-align: center;
   margin: 0;
 }
 
 #current-difficulty {
-  color: #2c3e50;
+  color: var(--text-color);
   font-weight: 500;
 }
 
@@ -672,8 +726,33 @@ button:disabled {
   border: 0;
 }
 
+/* Keyboard Instructions */
+.keyboard-instructions {
+  text-align: center;
+  margin: 0.5rem 0;
+  padding: 0.5rem 1rem;
+  background: var(--highscore-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  color: var(--highscore-text);
+  font-size: 0.875rem;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.keyboard-instructions small {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.numpad-layout {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  font-family: monospace;
+}
+
 .high-score-display .label {
-  color: #6c757d;
+  color: var(--highscore-text);
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -682,15 +761,16 @@ button:disabled {
 }
 
 .high-score-display {
-    padding: 1rem 2rem;
-    min-width: 180px;
-    background: linear-gradient(145deg, #FFFFFF, #F8FAFF);
-    border: 2px solid var(--border);
-    box-shadow: 0 4px 15px var(--shadow);
+  padding: 1rem 2rem;
+  min-width: 180px;
+  background: var(--highscore-bg);
+  border: 2px solid var(--border);
+  box-shadow: 0 4px 15px var(--shadow);
+  border-radius: 0.5rem;
 }
 
 .high-score-display #high-score {
-  color: #2c3e50;
+  color: var(--text-color);
   font-weight: 600;
   font-size: 2rem;
   display: flex;
@@ -705,7 +785,7 @@ button:disabled {
 }
 
 .stat-item b {
-  color: #6c757d;
+  color: var(--highscore-text);
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -718,23 +798,25 @@ button:disabled {
 }
 
 .stat-item span {
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: #2c3e50;
-    animation: scorePopup 0.3s ease;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-color);
+  animation: scorePopup 0.3s ease;
 }
 
 /* Add animation for score changes */
 @keyframes scorePopup {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.2);
-    }
-    100% {
-        transform: scale(1);
-    }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 #final-score {
@@ -748,7 +830,46 @@ button:disabled {
   from {
     transform: scale(0);
   }
+
   to {
+    transform: scale(1);
+  }
+}
+
+/* Missing moleAppear animation */
+@keyframes moleAppear {
+  0% {
+    transform: translateY(100%) scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Missing moleDisappear animation */
+@keyframes moleDisappear {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Missing moleHit animation */
+@keyframes moleHit {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+    filter: brightness(1.5);
+  }
+  100% {
     transform: scale(1);
   }
 }
@@ -758,10 +879,12 @@ button:disabled {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(0.8) rotate(10deg);
     opacity: 0.8;
   }
+
   100% {
     transform: scale(0);
     opacity: 0;
@@ -780,20 +903,16 @@ button:disabled {
   animation: mole-whack 0.3s ease-out;
 }
 
-/* Make sure your square can contain the animation properly */
-.square {
-  overflow: hidden;
-}
-
 @keyframes messagePopup {
-    0% {
-        transform: scale(0.5);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 
@@ -810,42 +929,4 @@ button:disabled {
 
 #theme-toggle:hover {
   transform: scale(1.2);
-}
-
-/* Dark mode styles */
-body.dark {
-  background: #1e1e1e;
-  color: #f8f9fa;
-}
-
-body.dark .header h1,
-body.dark #high-score,
-body.dark .stat-item span,
-body.dark #final-score {
-  color: #f8f9fa;
-}
-
-body.dark .square {
-  background: #2a2a2a;
-  border-color: #444;
-}
-
-body.dark .square:hover {
-  background: #3a3a3a;
-  border-color: #aaa;
-}
-
-body.dark .controls button,
-body.dark .difficulty-btn,
-body.dark .stats,
-body.dark .high-score-display,
-body.dark .high-score-message {
-  background-color: #2c2c2c;
-  color: #f8f9fa;
-  border-color: #555;
-}
-
-body.dark .difficulty-btn.active {
-  background: #f8f9fa;
-  color: #2c2c2c;
 }

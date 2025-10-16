@@ -3,6 +3,7 @@ import {
   difficultySettings,
   increaseScore,
   spawnMole,
+  spawnMultipleMoles,
   resetMolePosition,
   getCurrentSpeed,
   getInitialTime,
@@ -13,7 +14,6 @@ import {
 // 🎮 GLOBAL VARIABLES
 // ======================
 let squares,
-  mole,
   timeLeft,
   score,
   highScore,
@@ -29,7 +29,6 @@ let squares,
 
 function initializeElements() {
   squares = document.querySelectorAll('.square');
-  mole = document.querySelector('.mole');
   timeLeft = document.querySelector('#time-left');
   score = document.querySelector('#score');
   highScore = document.querySelector('#high-score');
@@ -50,14 +49,20 @@ function initializeElements() {
 let hitSound;
 
 function initializeAudio() {
-  hitSound = new Audio('audio/whack01.mp3');
+  try {
+    hitSound = new Audio('./audio/whack01.mp3');
+    hitSound.preload = 'auto';
+    hitSound.volume = 0.5;
+  } catch (error) {
+    console.warn('Audio initialization failed:', error);
+  }
 }
 
 // ======================
 // 🧠 GAME STATE
 // ======================
 let result = 0;
-let hit = 0;
+let activeMoles = new Set(); // Track multiple active moles by their square IDs
 let currentTime = 30;
 let timer = null;
 let countDownTimer = null;
@@ -129,7 +134,9 @@ function resetHighScore() {
 // ⏱️ GAME LOGIC
 // ======================
 function updateTimerUI() {
-  if (timeLeft) timeLeft.textContent = currentTime;
+  if (timeLeft) {
+    timeLeft.textContent = currentTime;
+  }
 }
 
 function resetGame(keepTime = false) {
@@ -138,7 +145,9 @@ function resetGame(keepTime = false) {
   result = 0;
   if (score) score.textContent = result;
   if (final) final.textContent = '';
-  if (squares) squares.forEach(s => s.classList.remove('mole'));
+  if (squares)
+    squares.forEach(s => s.classList.remove('mole', 'whacked', 'selected'));
+  activeMoles.clear(); // Clear the active moles set
   resetMolePosition();
   isGamePaused = false;
   isGameRunning = false;
@@ -189,13 +198,18 @@ function pauseGame() {
 function randomSquare() {
   squares.forEach(square => square.classList.remove('mole', 'whacked'));
   squares.forEach(square => square.classList.remove('selected'));
-  hit = null;
+  activeMoles.clear();
   selectedIndex = null;
 
-  const randomIndex = spawnMole(9, true);
-  const randomSquare = squares[randomIndex];
-  randomSquare.classList.add('mole');
-  hit = randomSquare.id;
+  const molePositions = spawnMultipleMoles(9, currentDifficulty);
+
+  molePositions.forEach(position => {
+    const square = squares[position];
+    if (square) {
+      square.classList.add('mole');
+      activeMoles.add((position + 1).toString()); // Convert to string ID (1-9)
+    }
+  });
 }
 
 // ======================
@@ -206,7 +220,7 @@ function hitSquare(index) {
   const square = squares[index];
   if (!square) return;
 
-  if (square.id == hit) {
+  if (activeMoles.has(square.id)) {
     if (multiplayer) {
       scores[currentPlayer] = increaseScore(
         scores[currentPlayer],
@@ -216,7 +230,8 @@ function hitSquare(index) {
       document.getElementById(`score-player${currentPlayer}`).textContent =
         scores[currentPlayer];
       currentPlayer = currentPlayer === 1 ? 2 : 1; // Switch turn
-      srAnnouncer.textContent = `Player ${currentPlayer}'s turn`;
+      if (srAnnouncer)
+        srAnnouncer.textContent = `Player ${currentPlayer}'s turn`;
     } else {
       result = increaseScore(result, currentDifficulty, currentTime);
       if (score) score.textContent = result;
@@ -228,13 +243,18 @@ function hitSquare(index) {
     }
 
     square.classList.add('whacked');
-    hit = null;
+    activeMoles.delete(square.id); // Remove this mole from active set
   }
 }
 
 function addSquareListeners() {
   squares.forEach((square, i) => {
+    // Add both mousedown and click events for better compatibility
     square.addEventListener('mousedown', () => {
+      hitSquare(i);
+      setSelection(i);
+    });
+    square.addEventListener('click', () => {
       hitSquare(i);
       setSelection(i);
     });
@@ -281,7 +301,11 @@ function countDown() {
     isGameRunning = false;
     if (pauseButton) pauseButton.disabled = true;
     if (restartButton) restartButton.disabled = false;
-    if (squares) squares.forEach(square => square.classList.remove('mole'));
+    if (squares)
+      squares.forEach(square =>
+        square.classList.remove('mole', 'whacked', 'selected')
+      );
+    activeMoles.clear(); // Clear active moles when game ends
 
     if (final) {
       if (multiplayer) {
@@ -289,8 +313,8 @@ function countDown() {
           scores[1] === scores[2]
             ? "It's a Tie!"
             : scores[1] > scores[2]
-            ? '🏆 Player 1 Wins!'
-            : '🏆 Player 2 Wins!';
+              ? '🏆 Player 1 Wins!'
+              : '🏆 Player 2 Wins!';
         final.textContent = `P1: ${scores[1]} | P2: ${scores[2]} → ${winner}`;
       } else {
         final.textContent = `Your final score is: ${result}`;
@@ -321,14 +345,18 @@ const reflectPreference = () => {
     ?.setAttribute('aria-label', theme.value);
 };
 const theme = { value: getColorPreference() };
-reflectPreference();
-window.onload = () => {
+
+// Initialize theme toggle
+function initializeTheme() {
   reflectPreference();
-  document.querySelector('#theme-toggle').addEventListener('click', () => {
-    theme.value = theme.value === 'light' ? 'dark' : 'light';
-    setPreference();
-  });
-};
+  const themeToggle = document.querySelector('#theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      theme.value = theme.value === 'light' ? 'dark' : 'light';
+      setPreference();
+    });
+  }
+}
 
 // ======================
 // 🎯 EVENT LISTENERS
@@ -350,12 +378,40 @@ function addEventListeners() {
     });
   });
 
-  // Keyboard input
+  // Keyboard input - numpad only (calculator layout)
   document.addEventListener('keydown', e => {
-    if (/^[1-9]$/.test(e.key)) {
-      const idx = parseInt(e.key, 10) - 1;
-      setSelection(idx);
-      hitSquare(idx);
+    let gridIndex = null;
+
+    // Check for numpad keys - calculator layout mapping
+    if (e.code && /^Numpad[1-9]$/.test(e.code)) {
+      const numpadKey = parseInt(e.code.replace('Numpad', ''), 10);
+      // Map numpad keys to grid positions (calculator layout):
+      // Numpad7=0, Numpad8=1, Numpad9=2
+      // Numpad4=3, Numpad5=4, Numpad6=5
+      // Numpad1=6, Numpad2=7, Numpad3=8
+      const numpadToGrid = {
+        7: 0,
+        8: 1,
+        9: 2, // Top row
+        4: 3,
+        5: 4,
+        6: 5, // Middle row
+        1: 6,
+        2: 7,
+        3: 8, // Bottom row
+      };
+      gridIndex = numpadToGrid[numpadKey];
+    }
+
+    if (
+      gridIndex !== null &&
+      gridIndex >= 0 &&
+      gridIndex < 9 &&
+      squares &&
+      squares[gridIndex]
+    ) {
+      setSelection(gridIndex);
+      hitSquare(gridIndex);
       e.preventDefault();
     }
   });
@@ -386,11 +442,28 @@ function addEventListeners() {
 export function initializeGame() {
   initializeElements();
   initializeAudio();
+  initializeTheme();
   resetMolePosition();
+
+  // Set initial time and update UI
+  currentTime = getInitialTime(currentDifficulty);
+  updateTimerUI();
+
   resetGame();
   updateHighScoreDisplay();
   addEventListeners();
   addSquareListeners();
+
+  // Initialize difficulty selection
+  if (difficultyButtons && difficultyButtons.length > 0) {
+    difficultyButtons.forEach(btn => btn.classList.remove('active'));
+    const easyButton = document.querySelector(
+      '.difficulty-btn[data-level="easy"]'
+    );
+    if (easyButton) {
+      easyButton.classList.add('active');
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

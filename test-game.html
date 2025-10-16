@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Whack-a-Mole Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .pass { background-color: #d4edda; border-color: #c3e6cb; }
+        .fail { background-color: #f8d7da; border-color: #f5c6cb; }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎮 Whack-a-Mole Game Testing</h1>
+        
+        <div class="test-item">
+            <h3>Manual Tests to Perform:</h3>
+            <ol>
+                <li>✅ <strong>Game loads without errors</strong> - Check browser console (F12)</li>
+                <li>✅ <strong>Start Game button works</strong> - Click "Start Game"</li>
+                <li>✅ <strong>Moles appear in squares</strong> - Look for mole images in grid squares</li>
+                <li>✅ <strong>Clicking moles increases score</strong> - Click on mole images</li>
+                <li>✅ <strong>Timer counts down</strong> - Watch the timer decrease</li>
+                <li>✅ <strong>Difficulty selection works</strong> - Try Easy/Medium/Hard</li>
+                <li>✅ <strong>Keyboard controls work</strong> - Use numpad 1-9 keys</li>
+                <li>✅ <strong>Sound plays on hit</strong> - Listen for hit sound</li>
+                <li>✅ <strong>Game ends properly</strong> - Wait for timer to reach 0</li>
+                <li>✅ <strong>High score saves</strong> - Beat your score and restart</li>
+            </ol>
+        </div>
+
+        <div class="test-item">
+            <h3>🎯 Test the Game Below:</h3>
+            <p>The game should be fully functional. Try all the features listed above!</p>
+            <button onclick="reloadGame()">🔄 Reload Game</button>
+            <button onclick="openDevTools()">🔧 Open Console</button>
+        </div>
+
+        <iframe src="http://localhost:5173" id="gameFrame"></iframe>
+
+        <div class="test-item">
+            <h3>🐛 Common Issues Fixed:</h3>
+            <ul>
+                <li>✅ Added missing <code>spawnMultipleMoles</code> function</li>
+                <li>✅ Fixed CSS keyframe animations (<code>moleAppear</code>, <code>moleDisappear</code>, <code>moleHit</code>)</li>
+                <li>✅ Removed undefined <code>mole</code> variable reference</li>
+                <li>✅ Added <code>position: relative</code> and <code>overflow: hidden</code> to squares</li>
+                <li>✅ Fixed image paths in CSS</li>
+                <li>✅ Consolidated duplicate CSS rules</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function reloadGame() {
+            document.getElementById('gameFrame').src = document.getElementById('gameFrame').src;
+        }
+        
+        function openDevTools() {
+            alert('Press F12 to open Developer Tools and check the Console tab for any errors');
+        }
+        
+        // Check if the dev server is running
+        fetch('http://localhost:5173')
+            .then(response => {
+                if (response.ok) {
+                    console.log('✅ Game server is running properly');
+                } else {
+                    console.log('❌ Game server returned error:', response.status);
+                }
+            })
+            .catch(error => {
+                console.log('❌ Game server is not accessible:', error);
+                document.querySelector('iframe').style.display = 'none';
+                document.querySelector('iframe').insertAdjacentHTML('afterend', 
+                    '<div style="color: red; padding: 20px; text-align: center;">❌ Game server not running. Please run: npm run dev</div>'
+                );
+            });
+    </script>
+</body>
+</html>
