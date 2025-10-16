@@ -10,7 +10,12 @@ import {
   shouldChangeSpeed,
 } from './src/gameLogic.js';
 
-// Audio for hitting mole
+// Import audio management
+import { getAudioManager, updateVolumeUI, updateMuteUI } from './src/audioControls.js';
+
+// Initialize audio manager
+const audioManager = getAudioManager();
+
 let squares,
   mole,
   timeLeft,
@@ -24,7 +29,10 @@ let squares,
   highScoreMessage,
   difficultyButtons,
   currentDifficultyDisplay,
-  srAnnouncer;
+  srAnnouncer,
+  volumeSlider,
+  volumeValue,
+  muteButton;
 
 function initializeElements() {
   squares = document.querySelectorAll('.square');
@@ -41,9 +49,12 @@ function initializeElements() {
   difficultyButtons = document.querySelectorAll('.difficulty-btn');
   currentDifficultyDisplay = document.querySelector('#current-difficulty');
   srAnnouncer = document.querySelector('#sr-announcer');
+  
+  // Audio control elements
+  volumeSlider = document.querySelector('#volume-slider');
+  volumeValue = document.querySelector('#volume-value');
+  muteButton = document.querySelector('#mute-button');
 }
-
-let hitSound;
 
 let result = 0;
 let hit = 0;
@@ -53,7 +64,7 @@ let countDownTimer = null;
 let isGamePaused = false;
 let isGameRunning = false;
 let currentDifficulty = 'easy';
-let selectedIndex = null; // For keyboard selection
+let selectedIndex = null;
 
 // Add log function for debugging
 function log(message) {
@@ -61,7 +72,12 @@ function log(message) {
 }
 
 function initializeAudio() {
-  hitSound = new Audio('audio/whack01.mp3');
+  // Load sound effects
+  audioManager.loadSound('hit', 'audio/whack01.mp3');
+  
+  // Initialize UI with saved settings
+  updateVolumeUI(audioManager.getVolume());
+  updateMuteUI(audioManager.getMuted());
 }
 
 // HIGH SCORE- from local storage
@@ -225,12 +241,11 @@ function randomSquare() {
       square.classList.remove('mole');
     });
 
-    // Clear selection on reset
     squares.forEach(square => square.classList.remove('selected'));
     hit = null;
     selectedIndex = null;
 
-    const randomIndex = spawnMole(9, true); // 9 squares, avoid repeats
+    const randomIndex = spawnMole(9, true);
     const randomSquare = squares[randomIndex];
     randomSquare.classList.add('mole');
     hit = randomSquare.id;
@@ -245,19 +260,12 @@ function hitSquare(index) {
   const square = squares[index];
   if (!square) return;
   if (square.id == hit) {
-    // Use enhanced scoring from gameLogic
     result = increaseScore(result, currentDifficulty, currentTime);
     if (score) score.textContent = result;
     hit = null;
 
-    // Play hit sound
-    if (hitSound) {
-      hitSound.currentTime = 0; // Restart if clicked rapidly
-      hitSound.play().catch(err => {
-        // Handle audio play errors (browser autoplay policy)
-        console.log('Audio play prevented:', err);
-      });
-    }
+    // Play hit sound using audio manager
+    audioManager.playSound('hit');
   }
 }
 
@@ -307,9 +315,8 @@ function moveMole() {
 function countDown() {
   currentTime--;
   if (timeLeft) timeLeft.textContent = currentTime;
-  // Check if speed should change (based on difficulty settings)
   if (shouldChangeSpeed(currentTime, currentDifficulty)) {
-    moveMole(); // Update to faster speed
+    moveMole();
   }
   if (currentTime == 0) {
     clearInterval(countDownTimer);
@@ -321,9 +328,27 @@ function countDown() {
     if (startButton) startButton.disabled = true;
     if (pauseButton) pauseButton.disabled = true;
     if (restartButton) restartButton.disabled = false;
-    // Remove any remaining moles
     if (squares) squares.forEach(square => square.classList.remove('mole'));
-    checkHighScore(); // Check for high score when game ends
+    checkHighScore();
+  }
+}
+
+function setupAudioControls() {
+  // Volume slider
+  if (volumeSlider) {
+    volumeSlider.addEventListener('input', (e) => {
+      const volume = parseFloat(e.target.value);
+      audioManager.setVolume(volume);
+      updateVolumeUI(volume);
+    });
+  }
+
+  // Mute button
+  if (muteButton) {
+    muteButton.addEventListener('click', () => {
+      const isMuted = audioManager.toggleMute();
+      updateMuteUI(isMuted);
+    });
   }
 }
 
@@ -332,20 +357,16 @@ function addEventListeners() {
   if (difficultyButtons) {
     difficultyButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        // Only allow difficulty change when game is not running
         if (!isGameRunning) {
-          // Update active button styling
           difficultyButtons.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
 
-          // Set new difficulty
           currentDifficulty = btn.dataset.level;
           if (currentDifficultyDisplay)
             currentDifficultyDisplay.textContent =
               currentDifficulty.charAt(0).toUpperCase() +
               currentDifficulty.slice(1);
 
-          // Reset game with new difficulty settings
           resetGame();
           updateHighScoreDisplay();
         }
@@ -355,11 +376,9 @@ function addEventListeners() {
 
   // Keyboard event listener
   document.addEventListener('keydown', e => {
-    // Ignore inputs
     const tag = document.activeElement.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
-    // Number keys 1-9 → hit square
     if (/^[1-9]$/.test(e.key)) {
       const idx = parseInt(e.key, 10) - 1;
       setSelection(idx);
@@ -368,9 +387,8 @@ function addEventListeners() {
       return;
     }
 
-    // Arrow key navigation
     const COLS = 3;
-    if (selectedIndex === null) setSelection(4); // default center
+    if (selectedIndex === null) setSelection(4);
     let row = Math.floor(selectedIndex / COLS);
     let col = selectedIndex % COLS;
 
@@ -414,6 +432,7 @@ function addEventListeners() {
 export function initializeGame() {
   initializeElements();
   initializeAudio();
+  setupAudioControls();
   resetMolePosition();
   resetGame();
   updateHighScoreDisplay();
