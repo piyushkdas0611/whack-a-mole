@@ -4,11 +4,15 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest app.test.js",
-  "vitest": "vitest run src/gameLogic.test.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js app.test.js",
+    "test:functions": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js app.functions.test.js",
+    "test:all": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+    "vitest": "vitest run src/gameLogic.test.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
@@ -25,6 +29,7 @@
   "devDependencies": {
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.0.0",
+    "prettier": "^3.6.2",
     "vitest": "^3.2.4"
   }
 }
