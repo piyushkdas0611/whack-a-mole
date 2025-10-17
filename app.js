@@ -244,7 +244,7 @@ function hitSquare(index) {
   if (!isGameRunning || isGamePaused) return;
   const square = squares[index];
   if (!square) return;
-  if (square.id == hit) {
+  if (square.id === hit) {
     // Use enhanced scoring from gameLogic
     result = increaseScore(result, currentDifficulty, currentTime);
     if (score) score.textContent = result;
