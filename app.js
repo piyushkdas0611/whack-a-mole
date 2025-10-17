@@ -217,6 +217,10 @@ function pauseGame() {
 function randomSquare() {
   log('randomSquare called');
   try {
+if (!isGameRunning || isGamePaused) {
+      return;  // Don't spawn moles if game isn't active
+    }
+
     if (!squares) {
       log('Error: squares not initialized');
       return;
