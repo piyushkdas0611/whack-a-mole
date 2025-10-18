@@ -8,20 +8,39 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self';"
     />
-    <title>Whack A Mole</title>
-
-    <script type="module" crossorigin src="/assets/index-DouqF3Dm.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CGKbKfve.css">
+    <title>Whack A Mole</title>
+    <script type="module" crossorigin src="/assets/index-CnUmUnBt.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ib6H_Bi0.css">
   </head>
   <body>
     <div class="header">
-      <img src="/assets/whack-a-mole-Ck2gdYcT.png" alt="" class="icon" />
+      <img src="./images/whack-a-mole.png" alt="" class="icon" />
       <h1>Whack A Mole</h1>
     </div>
+
+    <!-- Audio Controls Section -->
+    <div class="audio-controls">
+      <div class="volume-control">
+        <label for="volume-slider">Volume:</label>
+        <input
+          type="range"
+          id="volume-slider"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0.5"
+          aria-label="Volume control slider"
+        />
+        <span id="volume-value">50%</span>
+      </div>
+      <button id="mute-button" aria-label="Mute sound">🔊 Mute</button>
+    </div>
+
     <div class="high-score-display">
       <div class="label">🏆 High Score 🏆</div>
       <span id="high-score">0</span>
     </div>
+
     <div class="difficulty-selector">
       <label><b>Select Difficulty:</b></label>
       <button class="difficulty-btn" data-level="easy">Easy</button>
@@ -29,24 +48,80 @@
       <button class="difficulty-btn" data-level="hard">Hard</button>
       <span id="current-difficulty" style="display: none"></span>
     </div>
+
     <div class="stats">
       <div class="stat-item">
         <b>Score</b>
         <span id="score">0</span>
       </div>
-      <div class="stat-item">
-        <b>Time</b>
-        <span id="time-left"></span>
+
+      <!-- ================= KEYBOARD INSTRUCTIONS ================= -->
+      <div class="keyboard-instructions">
+        <small>💡 Use numpad in calculator layout to play!</small>
+        <div class="numpad-layout">
+          <span>Numpad: 789 (top) | 456 (middle) | 123 (bottom)</span>
+        </div>
       </div>
+
+      <!-- ================= HIGH SCORE ================= -->
+      <div class="high-score-display">
+        <div class="label">🏆 High Score 🏆</div>
+        <span id="high-score">0</span>
+      </div>
+
+      <!-- ================= DIFFICULTY ================= -->
+      <div class="difficulty-selector">
+        <label><b>Select Difficulty:</b></label>
+        <button class="difficulty-btn" data-level="easy">Easy</button>
+        <button class="difficulty-btn" data-level="medium">Medium</button>
+        <button class="difficulty-btn" data-level="hard">Hard</button>
+        <span id="current-difficulty" style="display: none"></span>
+      </div>
+
+      <!-- ================= MULTIPLAYER MODE ================= -->
+      <div class="multiplayer-controls">
+        <button id="multiplayer-toggle">🎮 Toggle Multiplayer</button>
+        <div class="player-scores">
+          <div><b>Player 1:</b> <span id="score-player1">0</span></div>
+          <div><b>Player 2:</b> <span id="score-player2">0</span></div>
+        </div>
+      </div>
+
+      <!-- ================= STATS ================= -->
+      <div class="stats">
+        <div class="stat-item">
+          <b>Score</b>
+          <span id="score">0</span>
+        </div>
+        <div class="stat-item">
+          <b>Time</b>
+          <span id="time-left"></span>
+        </div>
+      </div>
+
+      <!-- ================= CONTROLS ================= -->
+      <div class="controls">
+        <button id="start-button">Start Game</button>
+        <button id="pause-button" disabled>Pause</button>
+        <button id="restart-button" disabled>Restart</button>
+        <button id="reset-highscore-button">Reset High Score</button>
+      </div>
+
+      <!-- ================= FINAL RESULT ================= -->
+      <h2 id="final-score"></h2>
+      <div id="high-score-message" class="high-score-message"></div>
     </div>
+
     <div class="controls">
       <button id="start-button">Start Game</button>
       <button id="pause-button" disabled>Pause</button>
       <button id="restart-button" disabled>Restart</button>
       <button id="reset-highscore-button">Reset High Score</button>
     </div>
+
     <h2 id="final-score"></h2>
     <div id="high-score-message" class="high-score-message"></div>
+
     <div class="grid">
       <div
         class="square"
@@ -121,10 +196,12 @@
         aria-label="Hole 9"
       ></div>
     </div>
+  </div>
 
-    <!-- Screen reader announcer -->
-    <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
-
-
+  <!-- Screen reader announcer -->
+  <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
+
+</body>
+
   </body>
 </html>
