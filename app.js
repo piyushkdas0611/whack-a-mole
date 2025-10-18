@@ -196,10 +196,19 @@ function pauseGame() {
 }
 
 function randomSquare() {
-  squares.forEach(square => square.classList.remove('mole', 'whacked'));
-  squares.forEach(square => square.classList.remove('selected'));
-  activeMoles.clear();
-  selectedIndex = null;
+  log('randomSquare called');
+  try {
+if (!isGameRunning || isGamePaused) {
+      return;  // Don't spawn moles if game isn't active
+    }
+
+    if (!squares) {
+      log('Error: squares not initialized');
+      return;
+    }
+    squares.forEach(square => {
+      square.classList.remove('mole');
+    });
 
   const molePositions = spawnMultipleMoles(9, currentDifficulty);
 
@@ -219,6 +228,11 @@ function hitSquare(index) {
   if (!isGameRunning || isGamePaused) return;
   const square = squares[index];
   if (!square) return;
+  if (square.id === hit) {
+    // Use enhanced scoring from gameLogic
+    result = increaseScore(result, currentDifficulty, currentTime);
+    if (score) score.textContent = result;
+    hit = null;
 
   if (activeMoles.has(square.id)) {
     if (multiplayer) {
