@@ -6,7 +6,7 @@ export const difficultySettings = {
     fastSpeed: 800,
     speedChangeTime: 15,
     pointsPerHit: 1,
-    timeBonus: false
+    timeBonus: false,
   },
   medium: {
     gameTime: 45,
@@ -14,7 +14,7 @@ export const difficultySettings = {
     fastSpeed: 500,
     speedChangeTime: 25,
     pointsPerHit: 2,
-    timeBonus: true
+    timeBonus: true,
   },
   hard: {
     gameTime: 60,
@@ -22,30 +22,34 @@ export const difficultySettings = {
     fastSpeed: 300,
     speedChangeTime: 40,
     pointsPerHit: 3,
-    timeBonus: true
-  }
+    timeBonus: true,
+  },
 };
 
 // Track last mole position to avoid repeats
 let lastMolePosition = -1;
 
 // Game scoring logic with difficulty multiplier
-export function increaseScore(currentScore, difficulty = 'easy', timeRemaining = 0) {
+export function increaseScore(
+  currentScore,
+  difficulty = 'easy',
+  timeRemaining = 0
+) {
   const settings = difficultySettings[difficulty];
   let points = settings.pointsPerHit;
-  
+
   // Time bonus for medium/hard difficulties (extra points when time is low)
   if (settings.timeBonus && timeRemaining < 10) {
     points += 1;
   }
-  
+
   return currentScore + points;
 }
 
 // Mole spawning logic with anti-repeat system
 export function spawnMole(maxSquares, avoidRepeat = true) {
   let randomIndex;
-  
+
   if (avoidRepeat && lastMolePosition !== -1) {
     // Generate new position different from last
     do {
@@ -54,7 +58,7 @@ export function spawnMole(maxSquares, avoidRepeat = true) {
   } else {
     randomIndex = Math.floor(Math.random() * maxSquares);
   }
-  
+
   lastMolePosition = randomIndex;
   return randomIndex;
 }
@@ -77,8 +81,8 @@ export function getInitialTime(difficulty = 'easy') {
 // Get current speed based on time remaining and difficulty
 export function getCurrentSpeed(timeRemaining, difficulty = 'easy') {
   const settings = difficultySettings[difficulty];
-  return timeRemaining >= settings.speedChangeTime 
-    ? settings.initialSpeed 
+  return timeRemaining >= settings.speedChangeTime
+    ? settings.initialSpeed
     : settings.fastSpeed;
 }
 
@@ -88,7 +92,12 @@ export function shouldChangeSpeed(timeRemaining, difficulty = 'easy') {
 }
 
 // Calculate final score with difficulty multiplier
-export function calculateFinalScore(rawScore, difficulty = 'easy', perfectHits = 0, totalMoles = 1) {
+export function calculateFinalScore(
+  rawScore,
+  difficulty = 'easy',
+  perfectHits = 0,
+  totalMoles = 1
+) {
   const accuracy = (perfectHits / totalMoles) * 100;
   let multiplier = 1;
 
@@ -113,4 +122,23 @@ export function isValidDifficulty(difficulty) {
 export function getDifficultyName(difficulty) {
   if (!isValidDifficulty(difficulty)) return 'Easy';
   return difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+}
+
+// Spawn multiple moles based on difficulty
+export function spawnMultipleMoles(maxSquares, difficulty = 'easy') {
+  const moleCount = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 2 : 3;
+  const positions = [];
+  const usedPositions = new Set();
+
+  for (let i = 0; i < moleCount && positions.length < maxSquares; i++) {
+    let position;
+    do {
+      position = Math.floor(Math.random() * maxSquares);
+    } while (usedPositions.has(position));
+
+    usedPositions.add(position);
+    positions.push(position);
+  }
+
+  return positions;
 }
