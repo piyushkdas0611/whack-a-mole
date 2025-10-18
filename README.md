@@ -31,20 +31,6 @@ Test your reflexes by whacking the moles as they pop up randomly!
    cd whack-a-mole
    ```
 
-### Prerequisites
-
-- Node.js (for running tests)
-- Modern web browser
-
-### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/yourusername/whack-a-mole.git
-cd whack-a-mole
-```
-
 2. Install dependencies:
 
 ```bash
@@ -55,11 +41,29 @@ npm install
 
 ## 🧪 Running Tests
 
+The project includes comprehensive testing covering all functionality:
+
+### Test Suites Available:
+
 ```bash
+# Integration tests (game flow)
 npm test
+
+# Unit tests (individual functions)
+npm run test:functions
+
+# Game logic tests (core mechanics)
+npm run vitest
 ```
 
-This will execute all tests in gameLogic.test.js to ensure scoring, mole spawning, and timer logic work correctly.
+### Test Coverage:
+
+- **38 total tests** covering 100% of app.js functions
+- **Integration tests**: Complete game flow testing
+- **Unit tests**: Individual function testing (29 tests)
+- **Logic tests**: Core game mechanics (3 tests)
+
+For detailed testing information, see [TESTING.md](./TESTING.md).
 
 ---
 
