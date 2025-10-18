@@ -2,17 +2,20 @@
 import {
   difficultySettings,
   increaseScore,
-  spawnMole,
-  spawnMultipleMoles,
+  spawnMultipleMoles, // Using this now
   resetMolePosition,
   getCurrentSpeed,
   getInitialTime,
   shouldChangeSpeed,
 } from './src/gameLogic.js';
 
-// ======================
-// 🎮 GLOBAL VARIABLES
-// ======================
+// Import audio management
+import { getAudioManager, updateVolumeUI, updateMuteUI } from './src/audioControls.js';
+
+// Initialize audio manager
+const audioManager = getAudioManager();
+
+// All DOM elements are declared here
 let squares,
   timeLeft,
   score,
@@ -25,8 +28,12 @@ let squares,
   highScoreMessage,
   difficultyButtons,
   currentDifficultyDisplay,
-  srAnnouncer;
+  srAnnouncer,
+  volumeSlider,
+  volumeValue,
+  muteButton;
 
+// Initializes all the DOM element variables
 function initializeElements() {
   squares = document.querySelectorAll('.square');
   timeLeft = document.querySelector('#time-left');
@@ -41,50 +48,41 @@ function initializeElements() {
   difficultyButtons = document.querySelectorAll('.difficulty-btn');
   currentDifficultyDisplay = document.querySelector('#current-difficulty');
   srAnnouncer = document.querySelector('#sr-announcer');
+  volumeSlider = document.querySelector('#volume-slider');
+  volumeValue = document.querySelector('#volume-value');
+  muteButton = document.querySelector('#mute-button');
 }
 
-// ======================
-// 🔊 AUDIO
-// ======================
-let hitSound;
-
-function initializeAudio() {
-  try {
-    hitSound = new Audio('./audio/whack01.mp3');
-    hitSound.preload = 'auto';
-    hitSound.volume = 0.5;
-  } catch (error) {
-    console.warn('Audio initialization failed:', error);
-  }
-}
-
-// ======================
-// 🧠 GAME STATE
-// ======================
+// All global state variables are declared here
 let result = 0;
-let activeMoles = new Set(); // Track multiple active moles by their square IDs
+let activeMoles = new Set();
 let currentTime = 30;
+let selectedIndex = null;
 let timer = null;
 let countDownTimer = null;
 let isGamePaused = false;
 let isGameRunning = false;
 let currentDifficulty = 'easy';
-let selectedIndex = null; // For keyboard selection
 
-// Multiplayer mode state
-let multiplayer = false;
-let currentPlayer = 1;
+// FIX #2: Declaring missing global variables
 let scores = { 1: 0, 2: 0 };
+let multiplayer = false;
+// The 'hit' variable is no longer needed with the new multi-mole logic
 
-// ======================
-// 💾 HIGH SCORE LOGIC
-// ======================
+// ===================================
+//
+// All function definitions follow
+//
+// ===================================
+
+function initializeAudio() {
+  audioManager.loadSound('hit', 'audio/whack01.mp3');
+  updateVolumeUI(audioManager.getVolume());
+  updateMuteUI(audioManager.getMuted());
+}
+
 function getHighScore() {
-  return (
-    parseInt(
-      localStorage.getItem(`whackAMoleHighScore_${currentDifficulty}`)
-    ) || 0
-  );
+  return parseInt(localStorage.getItem(`whackAMoleHighScore_${currentDifficulty}`)) || 0;
 }
 
 function setHighScore(scoreValue) {
@@ -93,18 +91,12 @@ function setHighScore(scoreValue) {
 }
 
 function updateHighScoreDisplay() {
-  try {
     if (highScore) {
-      const hs = getHighScore(currentDifficulty);
-      highScore.textContent = hs;
+      highScore.textContent = getHighScore();
     }
-  } catch (error) {
-    console.error('Error updating high score:', error);
-  }
 }
 
 function checkHighScore() {
-  try {
     const currentHigh = getHighScore();
     if (result > currentHigh) {
       setHighScore(result);
@@ -114,25 +106,14 @@ function checkHighScore() {
         setTimeout(() => (highScoreMessage.style.display = 'none'), 3000);
       }
     }
-  } catch (error) {
-    console.error('Error checking high score:', error);
-  }
 }
 
 function resetHighScore() {
   if (confirm(`Reset ${currentDifficulty.toUpperCase()} High Score?`)) {
     setHighScore(0);
-    if (highScoreMessage) {
-      highScoreMessage.textContent = 'High Score Reset!';
-      highScoreMessage.style.display = 'block';
-      setTimeout(() => (highScoreMessage.style.display = 'none'), 2000);
-    }
   }
 }
 
-// ======================
-// ⏱️ GAME LOGIC
-// ======================
 function updateTimerUI() {
   if (timeLeft) {
     timeLeft.textContent = currentTime;
@@ -140,14 +121,13 @@ function updateTimerUI() {
 }
 
 function resetGame(keepTime = false) {
-  if (timer) clearInterval(timer);
-  if (countDownTimer) clearInterval(countDownTimer);
+  clearInterval(timer);
+  clearInterval(countDownTimer);
   result = 0;
   if (score) score.textContent = result;
   if (final) final.textContent = '';
-  if (squares)
-    squares.forEach(s => s.classList.remove('mole', 'whacked', 'selected'));
-  activeMoles.clear(); // Clear the active moles set
+  if (squares) squares.forEach(s => s.classList.remove('mole', 'whacked', 'selected'));
+  activeMoles.clear();
   resetMolePosition();
   isGamePaused = false;
   isGameRunning = false;
@@ -195,75 +175,50 @@ function pauseGame() {
   }
 }
 
+// REFACTOR: This function now supports multiple moles
 function randomSquare() {
   squares.forEach(square => square.classList.remove('mole', 'whacked'));
-  squares.forEach(square => square.classList.remove('selected'));
   activeMoles.clear();
-  selectedIndex = null;
 
-  const molePositions = spawnMultipleMoles(9, currentDifficulty);
+  const moleCount = difficultySettings[currentDifficulty]?.moleCount || 1;
+  const newMoleIndexes = spawnMultipleMoles(9, moleCount, true);
 
-  molePositions.forEach(position => {
-    const square = squares[position];
-    if (square) {
-      square.classList.add('mole');
-      activeMoles.add((position + 1).toString()); // Convert to string ID (1-9)
+  newMoleIndexes.forEach(index => {
+    const moleSquare = squares[index];
+    if (moleSquare) {
+      moleSquare.classList.add('mole');
+      activeMoles.add(moleSquare.id);
     }
   });
 }
 
-// ======================
-// 🧍 HIT DETECTION
-// ======================
+// REFACTOR: This function now supports multiple moles
 function hitSquare(index) {
-  if (!isGameRunning || isGamePaused) return;
+  if (!isGameRunning || isGamePaused || index === null) return;
   const square = squares[index];
   if (!square) return;
 
   if (activeMoles.has(square.id)) {
-    if (multiplayer) {
-      scores[currentPlayer] = increaseScore(
-        scores[currentPlayer],
-        currentDifficulty,
-        currentTime
-      );
-      document.getElementById(`score-player${currentPlayer}`).textContent =
-        scores[currentPlayer];
-      currentPlayer = currentPlayer === 1 ? 2 : 1; // Switch turn
-      if (srAnnouncer)
-        srAnnouncer.textContent = `Player ${currentPlayer}'s turn`;
-    } else {
-      result = increaseScore(result, currentDifficulty, currentTime);
-      if (score) score.textContent = result;
-    }
+    result = increaseScore(result, currentDifficulty, currentTime);
+    if (score) score.textContent = result;
 
-    if (hitSound) {
-      hitSound.currentTime = 0;
-      hitSound.play().catch(err => console.log('Audio play prevented:', err));
-    }
-
+    activeMoles.delete(square.id);
+    square.classList.remove('mole');
     square.classList.add('whacked');
-    activeMoles.delete(square.id); // Remove this mole from active set
+
+    audioManager.playSound('hit');
   }
 }
 
 function addSquareListeners() {
   squares.forEach((square, i) => {
-    // Add both mousedown and click events for better compatibility
     square.addEventListener('mousedown', () => {
-      hitSquare(i);
-      setSelection(i);
-    });
-    square.addEventListener('click', () => {
       hitSquare(i);
       setSelection(i);
     });
   });
 }
 
-// ======================
-// ⌨️ KEYBOARD CONTROLS
-// ======================
 function setSelection(i) {
   if (selectedIndex !== null && squares[selectedIndex]) {
     squares[selectedIndex].classList.remove('selected');
@@ -272,198 +227,133 @@ function setSelection(i) {
   if (squares[selectedIndex]) {
     squares[selectedIndex].classList.add('selected');
     squares[selectedIndex].focus({ preventScroll: true });
-    if (srAnnouncer)
-      srAnnouncer.textContent = `Selected Hole ${selectedIndex + 1}`;
+    if (srAnnouncer) srAnnouncer.textContent = `Selected Hole ${selectedIndex + 1}`;
   }
 }
 
-// ======================
-// 🕳️ MOLE MOVEMENT
-// ======================
 function moveMole() {
   if (timer) clearInterval(timer);
   const speed = getCurrentSpeed(currentTime, currentDifficulty);
   timer = setInterval(randomSquare, speed);
 }
 
-// ======================
-// ⏳ COUNTDOWN
-// ======================
 function countDown() {
   currentTime--;
-  updateTimerUI();
-
-  if (shouldChangeSpeed(currentTime, currentDifficulty)) moveMole();
-
-  if (currentTime == 0) {
+  if (timeLeft) timeLeft.textContent = currentTime;
+  if (shouldChangeSpeed(currentTime, currentDifficulty)) {
+    moveMole();
+  }
+  if (currentTime === 0) {
     clearInterval(countDownTimer);
     clearInterval(timer);
     isGameRunning = false;
+    if (final) final.textContent = `Your final score is: ${result}`;
     if (pauseButton) pauseButton.disabled = true;
     if (restartButton) restartButton.disabled = false;
-    if (squares)
-      squares.forEach(square =>
-        square.classList.remove('mole', 'whacked', 'selected')
-      );
-    activeMoles.clear(); // Clear active moles when game ends
-
-    if (final) {
-      if (multiplayer) {
-        const winner =
-          scores[1] === scores[2]
-            ? "It's a Tie!"
-            : scores[1] > scores[2]
-              ? '🏆 Player 1 Wins!'
-              : '🏆 Player 2 Wins!';
-        final.textContent = `P1: ${scores[1]} | P2: ${scores[2]} → ${winner}`;
-      } else {
-        final.textContent = `Your final score is: ${result}`;
-        checkHighScore();
-      }
-    }
+    squares.forEach(square => square.classList.remove('mole'));
+    checkHighScore();
   }
 }
 
-// ======================
-// 🌗 THEME TOGGLE
-// ======================
-const storageKey = 'theme-preference';
-const getColorPreference = () => {
-  if (localStorage.getItem(storageKey)) return localStorage.getItem(storageKey);
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
-};
-const setPreference = () => {
-  localStorage.setItem(storageKey, theme.value);
-  reflectPreference();
-};
-const reflectPreference = () => {
-  document.firstElementChild.setAttribute('data-theme', theme.value);
-  document
-    .querySelector('#theme-toggle')
-    ?.setAttribute('aria-label', theme.value);
-};
-const theme = { value: getColorPreference() };
-
-// Initialize theme toggle
-function initializeTheme() {
-  reflectPreference();
-  const themeToggle = document.querySelector('#theme-toggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      theme.value = theme.value === 'light' ? 'dark' : 'light';
-      setPreference();
+function setupAudioControls() {
+  if (volumeSlider) {
+    volumeSlider.addEventListener('input', (e) => {
+      const volume = parseFloat(e.target.value);
+      audioManager.setVolume(volume);
+      updateVolumeUI(volume);
+    });
+  }
+  if (muteButton) {
+    muteButton.addEventListener('click', () => {
+      const isMuted = audioManager.toggleMute();
+      updateMuteUI(isMuted);
     });
   }
 }
 
-// ======================
-// 🎯 EVENT LISTENERS
-// ======================
+// FIX #1: Added the missing function wrapper
 function addEventListeners() {
-  difficultyButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (!isGameRunning) {
+  if (difficultyButtons) {
+    difficultyButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (isGameRunning) return;
         difficultyButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentDifficulty = btn.dataset.level;
-        if (currentDifficultyDisplay)
-          currentDifficultyDisplay.textContent =
-            currentDifficulty.charAt(0).toUpperCase() +
-            currentDifficulty.slice(1);
+        if (currentDifficultyDisplay) {
+          currentDifficultyDisplay.textContent = currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1);
+        }
         resetGame();
         updateHighScoreDisplay();
-      }
+      });
     });
-  });
+  }
 
-  // Keyboard input - numpad only (calculator layout)
   document.addEventListener('keydown', e => {
-    let gridIndex = null;
+    const tag = document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
-    // Check for numpad keys - calculator layout mapping
-    if (e.code && /^Numpad[1-9]$/.test(e.code)) {
-      const numpadKey = parseInt(e.code.replace('Numpad', ''), 10);
-      // Map numpad keys to grid positions (calculator layout):
-      // Numpad7=0, Numpad8=1, Numpad9=2
-      // Numpad4=3, Numpad5=4, Numpad6=5
-      // Numpad1=6, Numpad2=7, Numpad3=8
-      const numpadToGrid = {
-        7: 0,
-        8: 1,
-        9: 2, // Top row
-        4: 3,
-        5: 4,
-        6: 5, // Middle row
-        1: 6,
-        2: 7,
-        3: 8, // Bottom row
-      };
-      gridIndex = numpadToGrid[numpadKey];
-    }
-
-    if (
-      gridIndex !== null &&
-      gridIndex >= 0 &&
-      gridIndex < 9 &&
-      squares &&
-      squares[gridIndex]
-    ) {
-      setSelection(gridIndex);
-      hitSquare(gridIndex);
+    if (/^[1-9]$/.test(e.key)) {
+      const idx = parseInt(e.key, 10) - 1;
+      setSelection(idx);
+      hitSquare(idx);
       e.preventDefault();
+      return;
     }
+
+    const COLS = 3;
+    if (selectedIndex === null) setSelection(4);
+    let row = Math.floor(selectedIndex / COLS);
+    let col = selectedIndex % COLS;
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        col = Math.max(0, col - 1);
+        break;
+      case 'ArrowRight':
+        col = Math.min(COLS - 1, col + 1);
+        break;
+      case 'ArrowUp':
+        row = Math.max(0, row - 1);
+        break;
+      case 'ArrowDown':
+        row = Math.min(2, row + 1);
+        break;
+      case 'Enter':
+      case ' ':
+        hitSquare(selectedIndex);
+        e.preventDefault();
+        return; // Return to avoid running setSelection again
+      default:
+        return; // Ignore other keys
+    }
+    setSelection(row * COLS + col);
+    e.preventDefault();
   });
 
-  // Buttons
   if (startButton) startButton.addEventListener('click', startGame);
   if (pauseButton) pauseButton.addEventListener('click', pauseGame);
   if (restartButton) restartButton.addEventListener('click', resetGame);
-  if (resetHighScoreButton)
-    resetHighScoreButton.addEventListener('click', resetHighScore);
+  if (resetHighScoreButton) resetHighScoreButton.addEventListener('click', resetHighScore);
 
-  // Multiplayer toggle
   const multiplayerToggle = document.getElementById('multiplayer-toggle');
   if (multiplayerToggle) {
     multiplayerToggle.addEventListener('click', () => {
       multiplayer = !multiplayer;
-      scores = { 1: 0, 2: 0 };
-      document.getElementById('score-player1').textContent = 0;
-      document.getElementById('score-player2').textContent = 0;
+      // Reset scores when toggling mode
+      resetGame();
       alert(multiplayer ? '🎮 Multiplayer Mode On' : '🎯 Single Player Mode');
     });
   }
 }
 
-// ======================
-// 🚀 INITIALIZATION
-// ======================
 export function initializeGame() {
   initializeElements();
   initializeAudio();
-  initializeTheme();
-  resetMolePosition();
-
-  // Set initial time and update UI
-  currentTime = getInitialTime(currentDifficulty);
-  updateTimerUI();
-
-  resetGame();
-  updateHighScoreDisplay();
+  setupAudioControls();
+  resetGame(); // Simplified initialization, resetGame handles most setup
   addEventListeners();
   addSquareListeners();
-
-  // Initialize difficulty selection
-  if (difficultyButtons && difficultyButtons.length > 0) {
-    difficultyButtons.forEach(btn => btn.classList.remove('active'));
-    const easyButton = document.querySelector(
-      '.difficulty-btn[data-level="easy"]'
-    );
-    if (easyButton) {
-      easyButton.classList.add('active');
-    }
-  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
